@@ -24,18 +24,21 @@
 - 인터랙티브 3D 시각화
 - 시맨틱 검색 기능
 
-<details>
-<summary>🎬 클릭하여 데모 영상 보기</summary>
+**데모 영상 파일:**
 
-**다운로드 방법:**
+- `demo-main.mov` (1.7MB) - 입력 화면 ~ 3D 공간 인터랙션
+- `demo-search.mov` (1.5MB) - 시맨틱 검색 기능
 
-1. GitHub에서 `public/videos/demo.mov` 다운로드
-2. 본인의 호스팅 서비스에 업로드
-3. 영상 URL로 참조
+**사용 방법:**
 
-또는 [여기서 직접 보기](#) (URL 추가 후 업데이트)
+1. `public/videos/demo-main.mov` 또는 `demo-search.mov` 다운로드
+2. 본인의 호스팅 서비스에 업로드 (예: YouTube, imgur, 클라우드 등)
+3. 영상 URL을 아래에 추가
 
-</details>
+**온라인 시청:**
+
+- [demo-main 영상](#) - URL 추가 후 업데이트
+- [demo-search 영상](#) - URL 추가 후 업데이트
 
 ## 🚀 시작하기
 
