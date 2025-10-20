@@ -154,7 +154,7 @@ export default function SearchPanel() {
   }
 
   return (
-    <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 z-10 w-[calc(100%-1rem)] sm:w-full max-w-md px-2 sm:px-4">
+    <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 z-30 w-[calc(100%-1rem)] sm:w-full max-w-md px-2 sm:px-4">
       <form
         onSubmit={handleSearch}
         className="bg-gray-900/80 backdrop-blur-sm rounded-lg shadow-lg"
