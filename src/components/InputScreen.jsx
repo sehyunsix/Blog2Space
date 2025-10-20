@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useStore } from '../store/useStore'
 import { useModel } from '../hooks/useModel'
 import { reduceWithUMAP } from '../utils/umap'
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls } from '@react-three/drei'
+import PointCloud from './PointCloud'
 
 const EXAMPLE_TEXTS = `React는 사용자 인터페이스를 구축하기 위한 JavaScript 라이브러리입니다.
 Vue.js는 프로그레시브 자바스크립트 프레임워크입니다.
@@ -29,7 +32,40 @@ export default function InputScreen() {
   const [modelId, setModelId] = useState('Xenova/all-MiniLM-L6-v2')
   const [showAdvanced, setShowAdvanced] = useState(false)
   const { setStage, setTexts, setEmbeddings, setPositions3D, setLoadingProgress } = useStore()
-  const { embed, loadModel } = useModel()
+  const { embed, loadModel, isReady } = useModel()
+
+  // 배경 3D 시각화용 상태
+  const [bgTexts, setBgTexts] = useState([])
+  const [bgPositions3D, setBgPositions3D] = useState([])
+  const [bgLoading, setBgLoading] = useState(true)
+
+  // 배경 임베딩 자동 생성
+  useEffect(() => {
+    const initBackgroundVisualization = async () => {
+      if (!isReady) return
+
+      try {
+        const texts = EXAMPLE_TEXTS.split('\n').filter((t) => t.trim())
+        setBgTexts(texts)
+
+        // 임베딩 생성
+        const embeddings = await embed(texts)
+
+        // 3D 좌표 계산
+        const positions3D = await reduceWithUMAP(embeddings, 3)
+
+        // 정규화
+        const normalized = normalizePositions(positions3D)
+        setBgPositions3D(normalized)
+        setBgLoading(false)
+      } catch (error) {
+        console.error('배경 시각화 생성 실패:', error)
+        setBgLoading(false)
+      }
+    }
+
+    initBackgroundVisualization()
+  }, [isReady, embed])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -163,31 +199,60 @@ export default function InputScreen() {
 
   return (
     <div className="w-full h-full bg-black flex items-center justify-center overflow-auto relative">
-      {/* 별 배경 효과 */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="stars"></div>
-        <div className="stars2"></div>
-        <div className="stars3"></div>
+      {/* 3D 배경 시각화 */}
+      <div className="absolute inset-0">
+        {!bgLoading && bgPositions3D.length > 0 && (
+          <Canvas camera={{ position: [0, 0, 100], fov: 75 }}>
+            <color attach="background" args={['#000000']} />
+            <ambientLight intensity={0.3} />
+            <pointLight position={[10, 10, 10]} intensity={0.8} color="#00d4ff" />
+            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#ff00ff" />
+            <pointLight position={[0, 10, -10]} intensity={0.6} color="#ffff00" />
+
+            {bgTexts.map((text, index) => (
+              <PointCloud
+                key={index}
+                position={bgPositions3D[index]}
+                text={text}
+                index={index}
+                isSelected={false}
+                isHovered={false}
+              />
+            ))}
+
+            <OrbitControls
+              enableZoom={true}
+              enablePan={true}
+              enableRotate={true}
+              autoRotate={true}
+              autoRotateSpeed={0.5}
+              minDistance={50}
+              maxDistance={200}
+            />
+          </Canvas>
+        )}
       </div>
+
+      {/* 입력 폼 */}
       <div className="max-w-2xl w-full mx-2 sm:mx-4 my-4 sm:my-8 relative z-10">
         <div className="text-center mb-4 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-4">
-            Blog<span className="text-purple-400">2</span>Space
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-4 drop-shadow-lg">
+            Blog<span className="text-cyan-400">2</span>Space
           </h1>
-          <p className="text-gray-300 text-sm sm:text-base md:text-lg">
+          <p className="text-gray-300 text-sm sm:text-base md:text-lg drop-shadow-md">
             텍스트를 3D 임베딩 공간으로 시각화하세요
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl"
+          className="bg-black/60 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl border border-white/10"
         >
           {/* 고급 설정 토글 */}
           <button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="mb-4 text-purple-300 hover:text-purple-100 text-sm flex items-center gap-2 transition-colors"
+            className="mb-4 text-cyan-300 hover:text-cyan-100 text-sm flex items-center gap-2 transition-colors"
           >
             <svg
               className={`w-4 h-4 transition-transform ${showAdvanced ? 'rotate-90' : ''}`}
@@ -202,7 +267,7 @@ export default function InputScreen() {
 
           {/* 모델 선택 (고급 설정) */}
           {showAdvanced && (
-            <div className="mb-6 p-4 bg-white/5 rounded-lg border border-white/10">
+            <div className="mb-6 p-4 bg-black/40 rounded-lg border border-white/10">
               <label className="block text-white text-sm font-semibold mb-2">
                 🤗 Hugging Face 모델 ID
               </label>
@@ -210,7 +275,7 @@ export default function InputScreen() {
                 type="text"
                 value={modelId}
                 onChange={(e) => setModelId(e.target.value)}
-                className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm font-mono"
+                className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm font-mono"
                 placeholder="예: Xenova/all-MiniLM-L6-v2"
               />
               <p className="text-gray-400 text-xs mt-2">
@@ -226,7 +291,7 @@ export default function InputScreen() {
               텍스트 입력 (한 줄에 하나씩)
             </label>
             <textarea
-              className="w-full h-48 sm:h-56 md:h-64 px-3 sm:px-4 py-2 sm:py-3 bg-white/5 border border-white/20 rounded-lg text-white text-sm sm:text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              className="w-full h-48 sm:h-56 md:h-64 px-3 sm:px-4 py-2 sm:py-3 bg-black/50 border border-white/20 rounded-lg text-white text-sm sm:text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
               placeholder="예시:&#10;React는 사용자 인터페이스를 구축하기 위한 JavaScript 라이브러리입니다.&#10;Vue.js는 프로그레시브 자바스크립트 프레임워크입니다.&#10;Python은 다양한 용도로 사용되는 고급 프로그래밍 언어입니다.&#10;..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -238,9 +303,9 @@ export default function InputScreen() {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 active:from-purple-800 active:to-pink-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 touch-manipulation shadow-lg hover:shadow-purple-500/50"
+            className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:from-cyan-800 active:to-blue-800 text-white font-bold text-lg py-3 px-6 rounded-lg transition-all duration-200 touch-manipulation shadow-lg hover:shadow-cyan-500/50 border border-cyan-400/30 tracking-wider"
           >
-            🚀 3D 우주로 시각화
+            🚀 GO TO SPACE
           </button>
         </form>
       </div>
