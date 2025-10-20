@@ -23,6 +23,11 @@ const POPULAR_MODELS = [
     description: '최신 모델 (384dim)',
   },
   {
+    id: 'Xenova/nomic-embed-text-v1.5',
+    name: 'Nomic Embed',
+    description: '고성능 임베딩 (768dim)',
+  },
+  {
     id: 'Xenova/paraphrase-multilingual-MiniLM-L12-v2',
     name: 'Multilingual',
     description: '다국어 지원 (384dim) ⚠️ 큰 파일',

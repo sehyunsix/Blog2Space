@@ -3,8 +3,29 @@ import { useStore } from '../store/useStore'
 import { useModel } from '../hooks/useModel'
 import { reduceWithUMAP } from '../utils/umap'
 
+const EXAMPLE_TEXTS = `React는 사용자 인터페이스를 구축하기 위한 JavaScript 라이브러리입니다.
+Vue.js는 프로그레시브 자바스크립트 프레임워크입니다.
+Angular는 TypeScript 기반의 웹 애플리케이션 프레임워크입니다.
+Python은 다양한 용도로 사용되는 고급 프로그래밍 언어입니다.
+Java는 객체지향 프로그래밍 언어로 많은 기업에서 사용됩니다.
+JavaScript는 웹 브라우저에서 동작하는 스크립트 언어입니다.
+TypeScript는 JavaScript에 타입을 추가한 언어입니다.
+머신러닝은 데이터에서 패턴을 학습하는 기술입니다.
+딥러닝은 신경망을 기반으로 한 머신러닝의 한 분야입니다.
+자연어 처리는 컴퓨터가 인간의 언어를 이해하도록 하는 기술입니다.
+컴퓨터 비전은 컴퓨터가 이미지를 이해하도록 하는 기술입니다.
+데이터베이스는 구조화된 데이터를 저장하고 관리하는 시스템입니다.
+SQL은 데이터베이스를 조작하기 위한 언어입니다.
+NoSQL은 비관계형 데이터베이스를 의미합니다.
+클라우드 컴퓨팅은 인터넷을 통해 컴퓨팅 리소스를 제공하는 서비스입니다.
+도커는 컨테이너 기반의 가상화 플랫폼입니다.
+쿠버네티스는 컨테이너 오케스트레이션 플랫폼입니다.
+Git은 분산 버전 관리 시스템입니다.
+GitHub는 Git 저장소 호스팅 서비스입니다.
+REST API는 HTTP를 기반으로 한 웹 서비스 아키텍처입니다.`
+
 export default function InputScreen() {
-  const [inputText, setInputText] = useState('')
+  const [inputText, setInputText] = useState(EXAMPLE_TEXTS)
   const [modelId, setModelId] = useState('Xenova/all-MiniLM-L6-v2')
   const [showAdvanced, setShowAdvanced] = useState(false)
   const { setStage, setTexts, setEmbeddings, setPositions3D, setLoadingProgress } = useStore()
@@ -140,33 +161,15 @@ export default function InputScreen() {
     )
   }
 
-  const handleExample = () => {
-    const exampleTexts = `React는 사용자 인터페이스를 구축하기 위한 JavaScript 라이브러리입니다.
-Vue.js는 프로그레시브 자바스크립트 프레임워크입니다.
-Angular는 TypeScript 기반의 웹 애플리케이션 프레임워크입니다.
-Python은 다양한 용도로 사용되는 고급 프로그래밍 언어입니다.
-Java는 객체지향 프로그래밍 언어로 많은 기업에서 사용됩니다.
-JavaScript는 웹 브라우저에서 동작하는 스크립트 언어입니다.
-TypeScript는 JavaScript에 타입을 추가한 언어입니다.
-머신러닝은 데이터에서 패턴을 학습하는 기술입니다.
-딥러닝은 신경망을 기반으로 한 머신러닝의 한 분야입니다.
-자연어 처리는 컴퓨터가 인간의 언어를 이해하도록 하는 기술입니다.
-컴퓨터 비전은 컴퓨터가 이미지를 이해하도록 하는 기술입니다.
-데이터베이스는 구조화된 데이터를 저장하고 관리하는 시스템입니다.
-SQL은 데이터베이스를 조작하기 위한 언어입니다.
-NoSQL은 비관계형 데이터베이스를 의미합니다.
-클라우드 컴퓨팅은 인터넷을 통해 컴퓨팅 리소스를 제공하는 서비스입니다.
-도커는 컨테이너 기반의 가상화 플랫폼입니다.
-쿠버네티스는 컨테이너 오케스트레이션 플랫폼입니다.
-Git은 분산 버전 관리 시스템입니다.
-GitHub는 Git 저장소 호스팅 서비스입니다.
-REST API는 HTTP를 기반으로 한 웹 서비스 아키텍처입니다.`
-    setInputText(exampleTexts)
-  }
-
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center overflow-auto">
-      <div className="max-w-2xl w-full mx-2 sm:mx-4 my-4 sm:my-8">
+    <div className="w-full h-full bg-black flex items-center justify-center overflow-auto relative">
+      {/* 별 배경 효과 */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="stars"></div>
+        <div className="stars2"></div>
+        <div className="stars3"></div>
+      </div>
+      <div className="max-w-2xl w-full mx-2 sm:mx-4 my-4 sm:my-8 relative z-10">
         <div className="text-center mb-4 sm:mb-8">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-4">
             Blog<span className="text-purple-400">2</span>Space
@@ -233,30 +236,12 @@ REST API는 HTTP를 기반으로 한 웹 서비스 아키텍처입니다.`
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            <button
-              type="submit"
-              className="flex-1 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-semibold py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation"
-            >
-              3D 공간 생성
-            </button>
-            <button
-              type="button"
-              onClick={handleExample}
-              className="bg-white/10 hover:bg-white/20 active:bg-white/30 text-white font-semibold py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation"
-            >
-              예시 불러오기
-            </button>
-          </div>
-
-          <div className="mt-6 text-gray-400 text-sm">
-            <p className="mb-2">💡 사용 팁:</p>
-            <ul className="list-disc list-inside space-y-1 ml-2">
-              <li>최소 3개 이상의 텍스트를 입력하세요</li>
-              <li>유사한 주제의 텍스트는 3D 공간에서 가까이 배치됩니다</li>
-              <li>각 텍스트는 한 줄에 하나씩 입력하세요</li>
-            </ul>
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 active:from-purple-800 active:to-pink-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 touch-manipulation shadow-lg hover:shadow-purple-500/50"
+          >
+            🚀 3D 우주로 시각화
+          </button>
         </form>
       </div>
     </div>
