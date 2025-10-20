@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2025-10-20
+
+### Added
+
+- 🎬 Playwright 기반 자동 데모 영상 녹화
+  - `npm run record:demo` 스크립트 추가
+  - 1280x720 고화질 WebM 형식
+  - 자동 저장: `public/videos/` 폴더
+- 📖 README.md 대폭 개선
+  - 데모 영상 섹션 추가
+  - 5단계 상세 사용 방법 작성
+  - 임베딩 모델 선택 가이드
+  - 모바일 사용 방법
+  - 향후 계획 체크 표시
+- 💾 프로젝트 구조 문서화 업데이트
+  - ModelSelector, useModel, embeddingWorker 추가
+  - 디렉토리 구조 명확화
+
+### Changed
+
+- 🎨 검색 버튼 Cyan 색상 변경 (Purple → Cyan)
+- 🧹 모델 선택 카테고리 제목에서 이모티콘 제거
+  - "⭐ 추천 모델" → "추천 모델" 등
+
+### Documentation
+
+- ✅ 사용 방법 단계별 가이드
+- ✅ 모델 선택 가이드 추가
+- ✅ 모바일 최적화 설명
+- ✅ 데모 영상 링크 추가
+
 ## [0.5.0] - 2025-10-20
 
 ### Added
