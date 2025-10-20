@@ -63,7 +63,7 @@ npm run build
   - 추천 모델 (경량, 빠름): MiniLM-L6, BGE Small, GTE Small
   - 다국어 모델: Multilingual MiniLM, E5 Multilingual, MPNet Multilingual
   - 영어 특화: MPNet Base, Nomic Embed, BGE Base/Large
-  - 특수 목적: LaBSE (109개 언어), Sentence-T5, DistilRoBERTa
+  - 특수 목적: LaBSE (109개 언어), Sentence-T5, BGE Chinese
 - **UMAP**: 고급 차원 축소 알고리즘 (t-SNE보다 빠름)
 
 ### 상태 관리

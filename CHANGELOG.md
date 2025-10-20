@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **🎯 특수 목적** (3개)
     - LaBSE: 109개 언어, 병렬 텍스트 (~470MB, 768dim)
     - Sentence-T5: T5 기반 임베딩 (~220MB, 768dim)
-    - DistilRoBERTa: 경량 RoBERTa (~82MB, 768dim)
+    - BGE Chinese: 중국어 특화 (~95MB, 512dim)
 
 ### Changed
 
@@ -37,6 +37,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 각 모델의 파일 크기 표시 추가
   - Cyan 강조 색상으로 시각적 통일성
   - 모바일 터치 최적화 (touch-manipulation)
+
+### Fixed
+
+- 🐛 호환되지 않는 모델 제거
+  - `Xenova/all-distilroberta-v1` → `Xenova/bge-small-zh-v1.5`로 교체
+  - Transformers.js와 호환되는 검증된 모델만 사용
 
 ## [0.4.1] - 2025-10-20
 
