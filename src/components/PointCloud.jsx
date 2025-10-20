@@ -163,7 +163,7 @@ function Sphere({
             style={{
               background: 'rgba(0, 0, 0, 0.9)', // 모두 검은 배경
               color: isSearchQuery ? '#00d4ff' : '#ffffff', // 검색 쿼리는 청록색 글자
-              fontSize: isSearchQuery ? '216px' : isSelected ? '192px' : '144px',
+              fontSize: isSearchQuery ? '96px' : isSelected ? '80px' : '64px',
               fontWeight: isSearchQuery
                 ? '900'
                 : similarity > 0.7

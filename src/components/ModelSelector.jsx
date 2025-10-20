@@ -35,7 +35,10 @@ export default function ModelSelector() {
   const [selectedModel, setSelectedModel] = useState('Xenova/all-MiniLM-L6-v2')
   const [customModel, setCustomModel] = useState('')
   const [showCustom, setShowCustom] = useState(false)
-  const [isExpanded, setIsExpanded] = useState(true)
+  // 모바일에서는 기본적으로 닫힌 상태
+  const [isExpanded, setIsExpanded] = useState(
+    typeof window !== 'undefined' && window.innerWidth >= 768
+  )
 
   const handleModelChange = async (modelId) => {
     setSelectedModel(modelId)
@@ -65,14 +68,14 @@ export default function ModelSelector() {
   return (
     <div className="absolute left-2 sm:left-4 top-16 sm:top-20 z-10 w-72 sm:w-80 max-h-[calc(100vh-5rem)] overflow-auto">
       <div className="bg-gray-900/95 backdrop-blur-sm rounded-lg shadow-2xl overflow-hidden border border-cyan-500/30">
-        {/* Header */}
+        {/* Header - 항상 표시 */}
         <div
-          className="bg-gradient-to-r from-cyan-600 to-blue-600 p-4 flex items-center justify-between cursor-pointer"
+          className="bg-gradient-to-r from-cyan-600 to-blue-600 p-3 sm:p-4 flex items-center justify-between cursor-pointer touch-manipulation"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center gap-2">
             <svg
-              className="w-5 h-5 text-white"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -84,10 +87,10 @@ export default function ModelSelector() {
                 d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
               />
             </svg>
-            <h3 className="font-semibold text-white">🤗 임베딩 모델</h3>
+            <h3 className="font-semibold text-white text-sm sm:text-base">🤗 모델 선택</h3>
           </div>
           <svg
-            className={`w-5 h-5 text-white transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 sm:w-5 sm:h-5 text-white transition-transform ${isExpanded ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

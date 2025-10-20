@@ -159,9 +159,9 @@ export default function SearchPanel() {
         onSubmit={handleSearch}
         className="bg-gray-900/80 backdrop-blur-sm rounded-lg shadow-lg"
       >
-        <div className="flex items-center gap-2 p-3">
+        <div className="flex items-center gap-2 p-2 sm:p-3">
           <svg
-            className="w-5 h-5 text-gray-400"
+            className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -179,7 +179,7 @@ export default function SearchPanel() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="시맨틱 검색..."
-            className="flex-1 bg-transparent text-white placeholder-gray-400 outline-none"
+            className="flex-1 bg-transparent text-white placeholder-gray-400 outline-none text-sm sm:text-base"
             disabled={isSearching}
           />
 
@@ -189,7 +189,12 @@ export default function SearchPanel() {
               onClick={handleClear}
               className="text-gray-400 hover:text-white transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

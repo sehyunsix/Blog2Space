@@ -53,13 +53,20 @@ export default function InfoPanel() {
   return (
     <div className="absolute top-16 sm:top-24 right-2 sm:right-4 w-80 sm:w-96 bg-gray-900/95 backdrop-blur-sm text-white rounded-lg shadow-2xl overflow-hidden z-10 max-h-[60vh] sm:max-h-[80vh] flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 flex items-center justify-between">
-        <h3 className="font-semibold">{showAllTexts ? '모든 텍스트 & 임베딩' : '텍스트 정보'}</h3>
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-3 sm:p-4 flex items-center justify-between">
+        <h3 className="font-semibold text-sm sm:text-base">
+          {showAllTexts ? '모든 텍스트' : '텍스트 정보'}
+        </h3>
         <button
           onClick={() => setSelectedIndex(null)}
-          className="text-white/80 hover:text-white transition-colors"
+          className="text-white/80 hover:text-white transition-colors touch-manipulation"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4 sm:w-5 sm:h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
