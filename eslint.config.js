@@ -5,11 +5,12 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
   {
-    ignores: ['dist', 'node_modules', '.git', '*.config.js'],
+    ignores: ['dist', 'node_modules', '.git', '*.config.js', 'public/**'],
   },
   js.configs.recommended,
   {
     files: ['**/*.{js,jsx}'],
+    ignores: ['**/workers/**'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -75,19 +76,15 @@ export default [
       'react-refresh': reactRefresh,
     },
     rules: {
-      // React 관련
       'react/jsx-uses-react': 'error',
       'react/jsx-uses-vars': 'error',
-      'react/prop-types': 'off', // TypeScript 사용 시 또는 PropTypes 불필요 시
+      'react/prop-types': 'off',
 
-      // React Hooks 규칙
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
 
-      // React Refresh
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 
-      // 일반 규칙
       'no-unused-vars': [
         'warn',
         {
@@ -106,6 +103,28 @@ export default [
       react: {
         version: 'detect',
       },
+    },
+  },
+  {
+    files: ['**/workers/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        self: 'readonly',
+        navigator: 'readonly',
+        console: 'readonly',
+        importScripts: 'readonly',
+      },
+    },
+    rules: {
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
     },
   },
 ]

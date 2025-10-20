@@ -1,5 +1,4 @@
 import { useStore } from '../store/useStore'
-import { cosineSimilarity } from '../utils/embeddings'
 import { useMemo } from 'react'
 
 export default function InfoPanel() {
@@ -7,6 +6,25 @@ export default function InfoPanel() {
 
   const selectedText = selectedIndex !== null ? texts[selectedIndex] : null
   const selectedEmbedding = selectedIndex !== null ? embeddings[selectedIndex] : null
+
+  // 코사인 유사도 계산
+  function cosineSimilarity(a, b) {
+    let dot = 0
+    let magA = 0
+    let magB = 0
+
+    for (let i = 0; i < a.length; i++) {
+      dot += a[i] * b[i]
+      magA += a[i] * a[i]
+      magB += b[i] * b[i]
+    }
+
+    magA = Math.sqrt(magA)
+    magB = Math.sqrt(magB)
+
+    if (magA === 0 || magB === 0) return 0
+    return dot / (magA * magB)
+  }
 
   // 유사한 텍스트 찾기
   const similarTexts = useMemo(() => {

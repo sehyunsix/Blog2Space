@@ -6,7 +6,7 @@ import SearchPanel from './SearchPanel'
 import InfoPanel from './InfoPanel'
 
 export default function Viewer3D() {
-  const { texts, setStage } = useStore()
+  const { texts, positions3D, setStage } = useStore()
 
   const handleBack = () => {
     setStage('input')
@@ -55,7 +55,14 @@ export default function Viewer3D() {
         <pointLight position={[10, 10, 10]} intensity={1} />
         <pointLight position={[-10, -10, -10]} intensity={0.5} />
 
-        <PointCloud />
+        {positions3D && positions3D.length > 0 ? (
+          <PointCloud />
+        ) : (
+          <mesh>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial color="red" />
+          </mesh>
+        )}
 
         <OrbitControls
           enableDamping

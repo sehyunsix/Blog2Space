@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
-import { searchTexts } from '../utils/embeddings'
+import { useModel } from '../hooks/useModel'
 
 export default function SearchPanel() {
   const [query, setQuery] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const { texts, embeddings, setSearchResults } = useStore()
+  const { embed } = useModel()
 
   const handleSearch = async (e) => {
     e.preventDefault()
@@ -17,13 +18,47 @@ export default function SearchPanel() {
 
     setIsSearching(true)
     try {
-      const results = await searchTexts(query, texts, embeddings)
-      setSearchResults(results.filter((r) => r.similarity > 0.3)) // 유사도 0.3 이상만
+      // 검색어 임베딩
+      const queryEmbeddings = await embed([query])
+      const queryEmbedding = queryEmbeddings[0]
+
+      // 코사인 유사도 계산
+      const results = texts.map((text, i) => ({
+        text,
+        index: i,
+        similarity: cosineSimilarity(queryEmbedding, embeddings[i]),
+      }))
+
+      // 유사도 순으로 정렬하고 0.3 이상만 필터링
+      const filtered = results
+        .filter((r) => r.similarity > 0.3)
+        .sort((a, b) => b.similarity - a.similarity)
+
+      setSearchResults(filtered)
     } catch (error) {
       console.error('검색 오류:', error)
     } finally {
       setIsSearching(false)
     }
+  }
+
+  // 코사인 유사도 계산
+  function cosineSimilarity(a, b) {
+    let dot = 0
+    let magA = 0
+    let magB = 0
+
+    for (let i = 0; i < a.length; i++) {
+      dot += a[i] * b[i]
+      magA += a[i] * a[i]
+      magB += b[i] * b[i]
+    }
+
+    magA = Math.sqrt(magA)
+    magB = Math.sqrt(magB)
+
+    if (magA === 0 || magB === 0) return 0
+    return dot / (magA * magB)
   }
 
   const handleClear = () => {

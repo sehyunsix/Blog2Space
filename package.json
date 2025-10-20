@@ -1,7 +1,7 @@
 {
   "name": "blog2space",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,12 +17,13 @@
     "version:major": "npm version major -m \"chore: bump version to %s\""
   },
   "dependencies": {
+    "@huggingface/transformers": "^3.7.5",
     "@react-three/drei": "^9.105.4",
     "@react-three/fiber": "^8.16.2",
-    "@xenova/transformers": "^2.17.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "three": "^0.163.0",
+    "umap-js": "^1.4.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

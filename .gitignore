@@ -26,3 +26,5 @@ dist-ssr
 # Transformers.js cache
 .cache
 
+# WASM files (will be copied from node_modules)
+public/*.wasm

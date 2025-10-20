@@ -7,7 +7,10 @@ export default function PointCloud() {
   const { texts, positions3D, selectedIndex, setSelectedIndex, searchResults } = useStore()
   const [hoveredIndex, setHoveredIndex] = useState(null)
 
-  // 개별 구체 렌더링 (클릭 가능하도록)
+  if (!positions3D || positions3D.length === 0) {
+    return null
+  }
+
   return (
     <group>
       {positions3D.map((pos, i) => (
@@ -44,7 +47,7 @@ function Sphere({
   // 색상 결정
   let color
   if (isSelected) {
-    color = '#ffff00'
+    color = '#fbbf24' // 노란색
   } else if (searchResults.length > 0) {
     const result = searchResults.find((r) => r.index === index)
     if (result) {
@@ -53,8 +56,10 @@ function Sphere({
     } else {
       color = '#444444'
     }
+  } else if (isHovered) {
+    color = '#34d399' // 초록색
   } else {
-    color = `hsl(${270 + index * 3.6}, 70%, 60%)`
+    color = `hsl(${(200 + index * 3.6) % 360}, 70%, 60%)`
   }
 
   // 크기 결정
@@ -76,33 +81,64 @@ function Sphere({
   })
 
   return (
-    <mesh
-      ref={meshRef}
-      position={position}
-      onClick={onClick}
-      onPointerOver={onHover}
-      onPointerOut={onUnhover}
-      scale={size}
-    >
-      <sphereGeometry args={[1, 16, 16]} />
-      <meshStandardMaterial
-        color={color}
-        emissive={color}
-        emissiveIntensity={isSelected || isHovered ? 0.5 : 0.2}
-        transparent
-        opacity={
-          searchResults.length > 0 && !searchResults.find((r) => r.index === index) ? 0.3 : 1
-        }
-      />
+    <group position={position}>
+      <mesh
+        ref={meshRef}
+        onClick={onClick}
+        onPointerOver={onHover}
+        onPointerOut={onUnhover}
+        scale={size}
+      >
+        <sphereGeometry args={[1, 16, 16]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={isSelected || isHovered ? 0.5 : 0.2}
+          transparent
+          opacity={
+            searchResults.length > 0 && !searchResults.find((r) => r.index === index) ? 0.3 : 1
+          }
+        />
+      </mesh>
 
-      {/* 호버 시 툴팁 */}
-      {isHovered && (
-        <Html distanceFactor={10}>
-          <div className="bg-gray-900/95 text-white px-3 py-2 rounded-lg shadow-lg max-w-xs backdrop-blur-sm">
-            <div className="text-sm font-medium line-clamp-2">{text}</div>
+      {/* 텍스트 라벨 - 항상 표시 */}
+      <Html
+        position={[0, size + 0.8, 0]}
+        center
+        distanceFactor={8}
+        style={{
+          transition: 'all 0.2s',
+          pointerEvents: 'none',
+        }}
+      >
+        <div
+          className="text-white text-center px-2 py-1 rounded shadow-lg whitespace-nowrap"
+          style={{
+            background: isSelected
+              ? 'rgba(251, 191, 36, 0.95)'
+              : isHovered
+                ? 'rgba(52, 211, 153, 0.9)'
+                : 'rgba(17, 24, 39, 0.75)',
+            fontSize: isSelected ? '13px' : '10px',
+            fontWeight: isSelected ? '600' : '400',
+            maxWidth: '150px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            opacity: isSelected || isHovered ? 1 : 0.8,
+          }}
+        >
+          {text.length > 30 ? text.substring(0, 30) + '...' : text}
+        </div>
+      </Html>
+
+      {/* 호버 시 전체 텍스트 툴팁 */}
+      {isHovered && text.length > 30 && (
+        <Html position={[0, size + 2, 0]} center distanceFactor={10}>
+          <div className="bg-gray-900/95 text-white px-4 py-3 rounded-lg text-sm max-w-md shadow-xl border border-emerald-500/50 backdrop-blur-sm">
+            {text}
           </div>
         </Html>
       )}
-    </mesh>
+    </group>
   )
 }

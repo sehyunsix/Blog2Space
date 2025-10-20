@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
-import { processTexts } from '../utils/embeddings'
+import { useModel } from '../hooks/useModel'
+import { reduceWithUMAP } from '../utils/umap'
 
 export default function InputScreen() {
   const [inputText, setInputText] = useState('')
-  const { setStage, setTexts } = useStore()
+  const { setStage, setTexts, setEmbeddings, setPositions3D, setLoadingProgress } = useStore()
+  const { embed, loadModel } = useModel()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -25,18 +27,69 @@ export default function InputScreen() {
       return
     }
 
+    if (texts.length < 3) {
+      alert('최소 3개 이상의 텍스트가 필요합니다.\n\n예제 버튼을 눌러보세요! 📚')
+      return
+    }
+
     setTexts(texts)
     setStage('loading')
 
-    // 임베딩 처리 시작
     try {
-      await processTexts(texts)
-      setStage('viewer')
+      // 1. 모델 로드
+      setLoadingProgress(10, '모델 로딩 중...')
+      await loadModel()
+
+      // 2. 임베딩 생성
+      setLoadingProgress(40, '임베딩 생성 중...')
+      const embeddings = await embed(texts)
+      setEmbeddings(embeddings)
+
+      // 3. 차원 축소 (UMAP)
+      setLoadingProgress(60, '3D 좌표 계산 중 (UMAP)...')
+      const positions3D = await reduceWithUMAP(embeddings, 3)
+
+      // 좌표 정규화
+      setLoadingProgress(90, '최적화 중...')
+      const normalized = normalizePositions(positions3D)
+      setPositions3D(normalized)
+
+      setLoadingProgress(100, '완료!')
+      setTimeout(() => setStage('viewer'), 100)
     } catch (error) {
-      console.error('처리 중 오류 발생:', error)
+      console.error('❌ 처리 중 오류 발생:', error)
       alert('처리 중 오류가 발생했습니다: ' + error.message)
       setStage('input')
     }
+  }
+
+  // 3D 좌표 정규화 및 스케일링
+  function normalizePositions(positions) {
+    // NaN 체크
+    if (positions.some((p) => p.some((v) => !isFinite(v)))) {
+      console.error('❌ Invalid coordinates detected')
+      return positions
+    }
+
+    const dims = positions[0].length
+    const mins = new Array(dims).fill(Infinity)
+    const maxs = new Array(dims).fill(-Infinity)
+
+    for (const pos of positions) {
+      for (let i = 0; i < dims; i++) {
+        if (pos[i] < mins[i]) mins[i] = pos[i]
+        if (pos[i] > maxs[i]) maxs[i] = pos[i]
+      }
+    }
+
+    const scale = 40
+    return positions.map((pos) =>
+      pos.map((val, i) => {
+        const range = maxs[i] - mins[i]
+        if (range === 0 || !isFinite(range)) return 0
+        return ((val - mins[i]) / range - 0.5) * scale
+      })
+    )
   }
 
   const handleExample = () => {
