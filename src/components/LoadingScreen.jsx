@@ -7,7 +7,16 @@ export default function LoadingScreen() {
     <div className="w-full h-full bg-black flex items-center justify-center">
       <div className="max-w-md w-full mx-4">
         <div className="bg-black/60 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">🚀 우주 생성 중...</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center flex items-center justify-center gap-3">
+            <svg
+              className="w-7 h-7 text-cyan-400 animate-bounce"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            </svg>
+            <span>우주 생성 중...</span>
+          </h2>
 
           <div className="mb-6">
             <div className="w-full bg-white/10 rounded-full h-3 mb-2">

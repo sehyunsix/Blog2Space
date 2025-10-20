@@ -34,7 +34,7 @@ export default function Viewer3D() {
               </svg>
             </button>
             <h1 className="text-2xl font-bold text-white">
-              Blog<span className="text-purple-400">2</span>Space
+              Blog<span className="text-cyan-400">2</span>Space
             </h1>
           </div>
 
@@ -83,16 +83,6 @@ export default function Viewer3D() {
         {/* Grid Helper - 매우 어둡게 */}
         <gridHelper args={[200, 40, '#111111', '#080808']} rotation={[0, 0, 0]} />
       </Canvas>
-
-      {/* Controls Help */}
-      <div className="absolute bottom-4 left-4 bg-gray-900/80 backdrop-blur-sm text-white text-xs p-3 rounded-lg">
-        <div className="font-semibold mb-2">조작법</div>
-        <div className="space-y-1 text-white/70">
-          <div>🖱️ 드래그: 회전</div>
-          <div>🔍 휠: 확대/축소</div>
-          <div>👆 클릭: 텍스트 선택</div>
-        </div>
-      </div>
     </div>
   )
 }

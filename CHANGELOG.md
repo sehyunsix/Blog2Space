@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2025-10-20
+
+### Added
+
+- 🎨 SVG 파비콘 추가
+  - Cyan 그라데이션 "2" 로고
+  - 우주 테마 (검은 배경 + 별)
+  - 빛나는 효과
+
+### Changed
+
+- 🎨 Cyan 테마 통일
+  - Viewer3D 로고 "2" 색상 변경 (purple → cyan)
+  - theme-color 변경 (#7c3aed → #00d4ff)
+  - InfoPanel 헤더 그라데이션 변경 (purple-pink → cyan-blue)
+  - 검색 결과 텍스트 cyan 계열로 통일
+- 🚀 LoadingScreen 우주선 아이콘 개선
+  - 이모티콘 → SVG 우주선으로 변경
+  - animate-bounce 효과 추가
+- 🧹 UI 정리
+  - Viewer3D 조작법 패널 제거 (간결한 UI)
+  - InfoPanel에서 임베딩/위치 정보 제거
+  - 유사도 정보만 표시하도록 간소화
+  - "유사도:" 라벨 추가로 가독성 향상
+
 ## [0.4.0] - 2025-10-20
 
 ### Added

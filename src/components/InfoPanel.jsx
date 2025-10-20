@@ -53,9 +53,9 @@ export default function InfoPanel() {
   return (
     <div className="hidden md:flex absolute top-16 sm:top-24 right-2 sm:right-4 w-80 sm:w-96 bg-gray-900/95 backdrop-blur-sm text-white rounded-lg shadow-2xl overflow-hidden z-10 max-h-[60vh] sm:max-h-[80vh] flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-3 sm:p-4 flex items-center justify-between">
+      <div className="bg-gradient-to-r from-cyan-600 to-blue-600 p-3 sm:p-4 flex items-center justify-between">
         <h3 className="font-semibold text-sm sm:text-base">
-          {showAllTexts ? '모든 텍스트' : '텍스트 정보'}
+          {showAllTexts ? '검색 결과' : '텍스트 정보'}
         </h3>
         <button
           onClick={() => setSelectedIndex(null)}
@@ -94,7 +94,7 @@ export default function InfoPanel() {
                     key={result.index}
                     className={`p-3 rounded-lg cursor-pointer transition-all ${
                       selectedIndex === result.index
-                        ? 'bg-purple-700 border-2 border-purple-400'
+                        ? 'bg-cyan-700 border-2 border-cyan-400'
                         : isHighSimilarity
                           ? 'bg-gray-700 hover:bg-gray-600'
                           : 'bg-gray-800 hover:bg-gray-700'
@@ -102,34 +102,23 @@ export default function InfoPanel() {
                     onClick={() => setSelectedIndex(result.index)}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold text-purple-400">
+                      <span className="text-xs font-semibold text-cyan-400">
                         #{result.index + 1}
                       </span>
                       <span
                         className={`text-sm font-bold ${
-                          isHighSimilarity ? 'text-yellow-400' : 'text-green-400'
+                          isHighSimilarity ? 'text-cyan-300' : 'text-cyan-400'
                         }`}
                       >
-                        {(result.similarity * 100).toFixed(1)}%
+                        유사도: {(result.similarity * 100).toFixed(1)}%
                       </span>
                     </div>
                     <div
-                      className={`text-sm mb-2 line-clamp-2 ${
-                        isHighSimilarity ? 'text-yellow-400 font-bold' : 'text-gray-300'
+                      className={`text-sm line-clamp-2 ${
+                        isHighSimilarity ? 'text-cyan-200 font-semibold' : 'text-gray-300'
                       }`}
                     >
                       {texts[result.index]}
-                    </div>
-                    <div className="text-xs font-mono text-gray-500">
-                      임베딩: [
-                      {embeddings[result.index]
-                        .slice(0, 3)
-                        .map((v) => v.toFixed(2))
-                        .join(', ')}
-                      ...]
-                    </div>
-                    <div className="text-xs font-mono text-gray-500 mt-1">
-                      위치: ({positions3D[result.index].map((v) => v.toFixed(1)).join(', ')})
                     </div>
                   </div>
                 )
@@ -179,11 +168,11 @@ export default function InfoPanel() {
                       className="w-full text-left bg-gray-800 hover:bg-gray-700 p-2 rounded transition-colors"
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-semibold text-purple-400">
+                        <span className="text-xs font-semibold text-cyan-400">
                           #{item.index + 1}
                         </span>
-                        <span className="text-xs text-green-400">
-                          {(item.similarity * 100).toFixed(1)}%
+                        <span className="text-xs text-cyan-400">
+                          유사도: {(item.similarity * 100).toFixed(1)}%
                         </span>
                       </div>
                       <div className="text-xs text-gray-300 line-clamp-2">{item.text}</div>
