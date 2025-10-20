@@ -1,38 +1,106 @@
 import { useState } from 'react'
 import { useModel } from '../hooks/useModel'
 
-const POPULAR_MODELS = [
-  {
-    id: 'Xenova/all-MiniLM-L6-v2',
-    name: 'MiniLM-L6',
-    description: '빠르고 효율적 (384dim)',
+const MODEL_CATEGORIES = {
+  recommended: {
+    title: '⭐ 추천 모델',
+    models: [
+      {
+        id: 'Xenova/all-MiniLM-L6-v2',
+        name: 'MiniLM-L6',
+        description: '빠르고 효율적 (384dim)',
+        size: '~23MB',
+      },
+      {
+        id: 'Xenova/bge-small-en-v1.5',
+        name: 'BGE Small',
+        description: '균형잡힌 성능 (384dim)',
+        size: '~33MB',
+      },
+      {
+        id: 'Xenova/gte-small',
+        name: 'GTE Small',
+        description: '최신 모델 (384dim)',
+        size: '~33MB',
+      },
+    ],
   },
-  {
-    id: 'Xenova/all-mpnet-base-v2',
-    name: 'MPNet Base',
-    description: '높은 정확도 (768dim)',
+  multilingual: {
+    title: '🌏 다국어 모델',
+    models: [
+      {
+        id: 'Xenova/paraphrase-multilingual-MiniLM-L12-v2',
+        name: 'Multilingual MiniLM',
+        description: '50개 언어 지원 (384dim)',
+        size: '~470MB',
+      },
+      {
+        id: 'Xenova/multilingual-e5-small',
+        name: 'E5 Multilingual',
+        description: '100개 언어 (384dim)',
+        size: '~470MB',
+      },
+      {
+        id: 'Xenova/paraphrase-multilingual-mpnet-base-v2',
+        name: 'MPNet Multilingual',
+        description: '다국어 고성능 (768dim)',
+        size: '~420MB',
+      },
+    ],
   },
-  {
-    id: 'Xenova/bge-small-en-v1.5',
-    name: 'BGE Small',
-    description: '균형잡힌 성능 (384dim)',
+  english: {
+    title: '🇺🇸 영어 특화',
+    models: [
+      {
+        id: 'Xenova/all-mpnet-base-v2',
+        name: 'MPNet Base',
+        description: '높은 정확도 (768dim)',
+        size: '~420MB',
+      },
+      {
+        id: 'Xenova/nomic-embed-text-v1.5',
+        name: 'Nomic Embed',
+        description: '고성능 임베딩 (768dim)',
+        size: '~550MB',
+      },
+      {
+        id: 'Xenova/bge-base-en-v1.5',
+        name: 'BGE Base',
+        description: '고성능 영어 (768dim)',
+        size: '~420MB',
+      },
+      {
+        id: 'Xenova/bge-large-en-v1.5',
+        name: 'BGE Large',
+        description: '최고 성능 (1024dim) ⚠️',
+        size: '~1.2GB',
+      },
+    ],
   },
-  {
-    id: 'Xenova/gte-small',
-    name: 'GTE Small',
-    description: '최신 모델 (384dim)',
+  specialized: {
+    title: '🎯 특수 목적',
+    models: [
+      {
+        id: 'Xenova/LaBSE',
+        name: 'LaBSE',
+        description: '109개 언어, 병렬 텍스트 (768dim)',
+        size: '~470MB',
+      },
+      {
+        id: 'Xenova/sentence-t5-base',
+        name: 'Sentence-T5',
+        description: 'T5 기반 임베딩 (768dim)',
+        size: '~220MB',
+      },
+      {
+        id: 'Xenova/all-distilroberta-v1',
+        name: 'DistilRoBERTa',
+        description: '경량 RoBERTa (768dim)',
+        size: '~82MB',
+      },
+    ],
   },
-  {
-    id: 'Xenova/nomic-embed-text-v1.5',
-    name: 'Nomic Embed',
-    description: '고성능 임베딩 (768dim)',
-  },
-  {
-    id: 'Xenova/paraphrase-multilingual-MiniLM-L12-v2',
-    name: 'Multilingual',
-    description: '다국어 지원 (384dim) ⚠️ 큰 파일',
-  },
-]
+}
 
 export default function ModelSelector() {
   const { loadModel, isLoading, isReady, progress, status, device, modelId } = useModel()
@@ -183,23 +251,34 @@ export default function ModelSelector() {
                 </div>
               )}
 
-              {/* 인기 모델 목록 */}
-              <div className="space-y-2 mb-4">
-                <div className="text-xs text-gray-400 mb-2">인기 모델</div>
-                {POPULAR_MODELS.map((model) => (
-                  <button
-                    key={model.id}
-                    onClick={() => handleModelChange(model.id)}
-                    disabled={isLoading}
-                    className={`w-full text-left p-3 rounded-lg transition-all ${
-                      selectedModel === model.id && !showCustom
-                        ? 'bg-cyan-500/30 border-2 border-cyan-500'
-                        : 'bg-gray-800 hover:bg-gray-700 border-2 border-transparent'
-                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                  >
-                    <div className="font-medium text-white text-sm">{model.name}</div>
-                    <div className="text-xs text-gray-400 mt-1">{model.description}</div>
-                  </button>
+              {/* 카테고리별 모델 목록 */}
+              <div className="space-y-4 mb-4">
+                {Object.entries(MODEL_CATEGORIES).map(([categoryKey, category]) => (
+                  <div key={categoryKey} className="space-y-2">
+                    <div className="text-xs font-semibold text-cyan-400 mb-2">{category.title}</div>
+                    {category.models.map((model) => (
+                      <button
+                        key={model.id}
+                        onClick={() => handleModelChange(model.id)}
+                        disabled={isLoading}
+                        className={`w-full text-left p-3 rounded-lg transition-all touch-manipulation ${
+                          selectedModel === model.id && !showCustom
+                            ? 'bg-cyan-500/30 border-2 border-cyan-500'
+                            : 'bg-gray-800 hover:bg-gray-700 border-2 border-transparent'
+                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <div className="font-medium text-white text-sm">{model.name}</div>
+                            <div className="text-xs text-gray-400 mt-1">{model.description}</div>
+                          </div>
+                          <div className="text-xs text-cyan-400 whitespace-nowrap">
+                            {model.size}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 ))}
               </div>
 

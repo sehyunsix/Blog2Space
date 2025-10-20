@@ -59,7 +59,12 @@ npm run build
 ### AI/ML
 
 - **Transformers.js**: 브라우저 내 AI 모델 실행
-- **all-MiniLM-L6-v2**: 경량 임베딩 모델 (384차원)
+- **13개 임베딩 모델 지원**:
+  - 추천 모델 (경량, 빠름): MiniLM-L6, BGE Small, GTE Small
+  - 다국어 모델: Multilingual MiniLM, E5 Multilingual, MPNet Multilingual
+  - 영어 특화: MPNet Base, Nomic Embed, BGE Base/Large
+  - 특수 목적: LaBSE (109개 언어), Sentence-T5, DistilRoBERTa
+- **UMAP**: 고급 차원 축소 알고리즘 (t-SNE보다 빠름)
 
 ### 상태 관리
 
@@ -94,14 +99,17 @@ Blog2Space/
 
 ### 1. 임베딩 생성
 
-- Transformers.js의 `all-MiniLM-L6-v2` 모델 사용
-- 384차원 임베딩 벡터 생성
+- **13개 Hugging Face 모델** 지원 (카테고리별 분류)
+- 384 ~ 1024차원 임베딩 벡터 생성
 - 브라우저에서 직접 실행 (서버 불필요)
+- 모델 자동 다운로드 및 캐싱
+- 다국어 지원 (최대 109개 언어)
 
 ### 2. 차원 축소
 
-- PCA 알고리즘으로 384차원 → 3차원 변환
+- **UMAP** 알고리즘으로 고차원 → 3차원 변환
 - 텍스트 간 유사도 관계 보존
+- 대규모 데이터셋 최적화 (샘플링 기반)
 
 ### 3. 3D 시각화
 
@@ -119,11 +127,13 @@ Blog2Space/
 
 - [ ] 블로그 URL 입력 및 자동 스크래핑
 - [ ] 다양한 블로그 플랫폼 지원 (Tistory, Naver, Medium 등)
-- [ ] UMAP/t-SNE 차원 축소 옵션
+- [x] ~~UMAP 차원 축소~~ (v0.2.0)
+- [x] ~~다양한 임베딩 모델 지원~~ (v0.5.0 - 13개 모델)
 - [ ] 클러스터 자동 레이블링
 - [ ] 시간 축 필터링
 - [ ] 데이터 내보내기 (JSON, 이미지)
 - [ ] 공유 링크 생성
+- [x] ~~모바일 최적화~~ (v0.4.0)
 
 ## 📝 라이선스
 
