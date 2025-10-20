@@ -303,9 +303,16 @@ export default function InputScreen() {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:from-cyan-800 active:to-blue-800 text-white font-bold text-lg py-3 px-6 rounded-lg transition-all duration-200 touch-manipulation shadow-lg hover:shadow-cyan-500/50 border border-cyan-400/30 tracking-wider"
+            className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 active:from-cyan-800 active:to-blue-800 text-white font-bold text-lg py-3 px-6 rounded-lg transition-all duration-200 touch-manipulation shadow-lg hover:shadow-cyan-500/50 border border-cyan-400/30 tracking-wider flex items-center justify-center gap-3 group"
           >
-            🚀 GO TO SPACE
+            <svg
+              className="w-6 h-6 text-cyan-300 group-hover:text-white transition-all duration-300 animate-bounce group-hover:animate-pulse"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            </svg>
+            <span>GO TO SPACE</span>
           </button>
         </form>
       </div>
