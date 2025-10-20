@@ -28,3 +28,7 @@ dist-ssr
 
 # WASM files (will be copied from node_modules)
 public/*.wasm
+
+# Demo video files (upload manually)
+public/videos/*.mov
+public/videos/*.mp4
