@@ -1,11 +1,20 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import { useModel } from '../hooks/useModel'
+import { reduceWithUMAP } from '../utils/umap'
 
 export default function SearchPanel() {
   const [query, setQuery] = useState('')
   const [isSearching, setIsSearching] = useState(false)
-  const { texts, embeddings, setSearchResults } = useStore()
+  const {
+    texts,
+    embeddings,
+    positions3D,
+    setSearchResults,
+    setSelectedIndex,
+    setCameraTarget,
+    setSearchQueryData,
+  } = useStore()
   const { embed } = useModel()
 
   const handleSearch = async (e) => {
@@ -22,6 +31,19 @@ export default function SearchPanel() {
       const queryEmbeddings = await embed([query])
       const queryEmbedding = queryEmbeddings[0]
 
+      // 검색 쿼리의 3D 위치 계산 (기존 임베딩들과 함께 UMAP 적용)
+      const allEmbeddings = [...embeddings, queryEmbedding]
+      const all3DPositions = await reduceWithUMAP(allEmbeddings, 3)
+
+      // 검색 쿼리의 위치는 마지막 요소
+      const queryPosition = all3DPositions[all3DPositions.length - 1]
+
+      // 정규화
+      const normalized = normalizePosition(queryPosition, positions3D)
+
+      // Store에 검색 쿼리 데이터 저장
+      setSearchQueryData(query, queryEmbedding, normalized)
+
       // 코사인 유사도 계산
       const results = texts.map((text, i) => ({
         text,
@@ -35,6 +57,15 @@ export default function SearchPanel() {
         .sort((a, b) => b.similarity - a.similarity)
 
       setSearchResults(filtered)
+
+      // 검색 쿼리 위치로 카메라 이동
+      console.log('🎯 검색 쿼리 위치로 이동:', normalized)
+      setCameraTarget(normalized)
+
+      // 가장 유사한 포인트 선택
+      if (filtered.length > 0) {
+        setSelectedIndex(filtered[0].index)
+      }
     } catch (error) {
       console.error('검색 오류:', error)
     } finally {
@@ -61,9 +92,37 @@ export default function SearchPanel() {
     return dot / (magA * magB)
   }
 
+  // 새 위치를 기존 좌표계에 맞게 정규화
+  function normalizePosition(newPos, existingPositions) {
+    if (existingPositions.length === 0) return newPos
+
+    // 기존 포인트들의 범위 계산
+    const mins = [Infinity, Infinity, Infinity]
+    const maxs = [-Infinity, -Infinity, -Infinity]
+
+    for (const pos of existingPositions) {
+      for (let i = 0; i < 3; i++) {
+        if (pos[i] < mins[i]) mins[i] = pos[i]
+        if (pos[i] > maxs[i]) maxs[i] = pos[i]
+      }
+    }
+
+    // 새 위치를 같은 스케일로 정규화
+    const scale = 100
+    return newPos.map((val, i) => {
+      const range = maxs[i] - mins[i]
+      if (range === 0 || !isFinite(range)) return 0
+      // 새 위치를 기존 범위에 맞춤
+      return ((val - mins[i]) / range - 0.5) * scale
+    })
+  }
+
   const handleClear = () => {
     setQuery('')
     setSearchResults([])
+    setSelectedIndex(null)
+    setCameraTarget(null)
+    useStore.getState().clearSearchQueryData()
   }
 
   return (

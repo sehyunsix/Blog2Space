@@ -5,6 +5,8 @@ import { reduceWithUMAP } from '../utils/umap'
 
 export default function InputScreen() {
   const [inputText, setInputText] = useState('')
+  const [modelId, setModelId] = useState('Xenova/all-MiniLM-L6-v2')
+  const [showAdvanced, setShowAdvanced] = useState(false)
   const { setStage, setTexts, setEmbeddings, setPositions3D, setLoadingProgress } = useStore()
   const { embed, loadModel } = useModel()
 
@@ -36,9 +38,9 @@ export default function InputScreen() {
     setStage('loading')
 
     try {
-      // 1. 모델 로드
-      setLoadingProgress(10, '모델 로딩 중...')
-      await loadModel()
+      // 1. 모델 로드 (사용자가 선택한 모델 ID 전달)
+      setLoadingProgress(10, `모델 로딩 중... (${modelId})`)
+      await loadModel(modelId)
 
       // 2. 임베딩 생성
       setLoadingProgress(40, '임베딩 생성 중...')
@@ -67,27 +69,47 @@ export default function InputScreen() {
   function normalizePositions(positions) {
     // NaN 체크
     if (positions.some((p) => p.some((v) => !isFinite(v)))) {
-      console.error('❌ Invalid coordinates detected')
-      return positions
+      console.error('❌ Invalid coordinates detected:', positions.slice(0, 3))
+      throw new Error('유효하지 않은 좌표가 생성되었습니다. 다시 시도해주세요.')
+    }
+
+    if (positions.length === 0) {
+      console.error('❌ No positions to normalize')
+      return []
     }
 
     const dims = positions[0].length
     const mins = new Array(dims).fill(Infinity)
     const maxs = new Array(dims).fill(-Infinity)
 
+    // 최소/최대값 계산
     for (const pos of positions) {
       for (let i = 0; i < dims; i++) {
-        if (pos[i] < mins[i]) mins[i] = pos[i]
-        if (pos[i] > maxs[i]) maxs[i] = pos[i]
+        if (isFinite(pos[i])) {
+          if (pos[i] < mins[i]) mins[i] = pos[i]
+          if (pos[i] > maxs[i]) maxs[i] = pos[i]
+        }
       }
     }
 
-    const scale = 40
+    // 스케일 계산
+    const scale = 100 // 스케일 대폭 증가 (더 넓게 분산)
+
+    console.log('📊 정규화 정보:', {
+      count: positions.length,
+      mins: mins.map((v) => v.toFixed(2)),
+      maxs: maxs.map((v) => v.toFixed(2)),
+      scale,
+    })
+
     return positions.map((pos) =>
       pos.map((val, i) => {
         const range = maxs[i] - mins[i]
-        if (range === 0 || !isFinite(range)) return 0
-        return ((val - mins[i]) / range - 0.5) * scale
+        if (range === 0 || !isFinite(range)) {
+          return 0
+        }
+        const normalized = ((val - mins[i]) / range - 0.5) * scale
+        return isFinite(normalized) ? normalized : 0
       })
     )
   }
@@ -130,6 +152,44 @@ REST API는 HTTP를 기반으로 한 웹 서비스 아키텍처입니다.`
           onSubmit={handleSubmit}
           className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl"
         >
+          {/* 고급 설정 토글 */}
+          <button
+            type="button"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="mb-4 text-purple-300 hover:text-purple-100 text-sm flex items-center gap-2 transition-colors"
+          >
+            <svg
+              className={`w-4 h-4 transition-transform ${showAdvanced ? 'rotate-90' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            고급 설정 (임베딩 모델 변경)
+          </button>
+
+          {/* 모델 선택 (고급 설정) */}
+          {showAdvanced && (
+            <div className="mb-6 p-4 bg-white/5 rounded-lg border border-white/10">
+              <label className="block text-white text-sm font-semibold mb-2">
+                🤗 Hugging Face 모델 ID
+              </label>
+              <input
+                type="text"
+                value={modelId}
+                onChange={(e) => setModelId(e.target.value)}
+                className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm font-mono"
+                placeholder="예: Xenova/all-MiniLM-L6-v2"
+              />
+              <p className="text-gray-400 text-xs mt-2">
+                💡 Transformers.js 호환 임베딩 모델만 사용 가능합니다.
+                <br />
+                추천: Xenova/all-MiniLM-L6-v2, Xenova/bge-small-en-v1.5
+              </p>
+            </div>
+          )}
+
           <div className="mb-6">
             <label className="block text-white text-sm font-semibold mb-3">
               텍스트 입력 (한 줄에 하나씩)

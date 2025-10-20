@@ -4,6 +4,7 @@ import { useStore } from '../store/useStore'
 import PointCloud from './PointCloud'
 import SearchPanel from './SearchPanel'
 import InfoPanel from './InfoPanel'
+import CameraController from './CameraController'
 
 export default function Viewer3D() {
   const { texts, positions3D, setStage } = useStore()
@@ -47,13 +48,11 @@ export default function Viewer3D() {
       <InfoPanel />
 
       {/* 3D Canvas */}
-      <Canvas
-        camera={{ position: [0, 0, 50], fov: 60 }}
-        style={{ background: 'linear-gradient(to bottom, #0f172a, #1e1b4b)' }}
-      >
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} />
+      <Canvas camera={{ position: [0, 0, 120], fov: 75 }} style={{ background: '#000000' }}>
+        <ambientLight intensity={0.2} />
+        <pointLight position={[50, 50, 50]} intensity={0.5} color="#4080ff" />
+        <pointLight position={[-50, -50, -50]} intensity={0.3} color="#ff4080" />
+        <pointLight position={[0, 100, 0]} intensity={0.4} color="#80ff40" />
 
         {positions3D && positions3D.length > 0 ? (
           <PointCloud />
@@ -65,16 +64,20 @@ export default function Viewer3D() {
         )}
 
         <OrbitControls
+          makeDefault
           enableDamping
           dampingFactor={0.05}
           rotateSpeed={0.5}
           zoomSpeed={0.8}
-          minDistance={10}
-          maxDistance={150}
+          minDistance={30}
+          maxDistance={300}
         />
 
-        {/* Grid Helper */}
-        <gridHelper args={[100, 20, '#666666', '#333333']} rotation={[0, 0, 0]} />
+        {/* 카메라 자동 이동 컨트롤러 */}
+        <CameraController />
+
+        {/* Grid Helper - 매우 어둡게 */}
+        <gridHelper args={[200, 40, '#111111', '#080808']} rotation={[0, 0, 0]} />
       </Canvas>
 
       {/* Controls Help */}

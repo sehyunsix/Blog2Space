@@ -34,4 +34,17 @@ export const useStore = create((set) => ({
   // 검색 결과
   searchResults: [],
   setSearchResults: (results) => set({ searchResults: results }),
+
+  // 카메라 타겟 (검색 시 이동용)
+  cameraTarget: null,
+  setCameraTarget: (target) => set({ cameraTarget: target }),
+
+  // 검색 쿼리 임베딩 및 위치
+  searchQueryText: null,
+  searchQueryEmbedding: null,
+  searchQueryPosition: null,
+  setSearchQueryData: (text, embedding, position) =>
+    set({ searchQueryText: text, searchQueryEmbedding: embedding, searchQueryPosition: position }),
+  clearSearchQueryData: () =>
+    set({ searchQueryText: null, searchQueryEmbedding: null, searchQueryPosition: null }),
 }))

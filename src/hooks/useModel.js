@@ -13,6 +13,7 @@ export const useModel = () => {
     progress: 0,
     status: 'Waiting to start...',
     device: null,
+    modelId: null,
   })
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export const useModel = () => {
             progress: 100,
             status: 'Ready!',
             device: payload.device,
+            modelId: payload.modelId,
           }))
         } else if (type === 'error') {
           console.error('Worker error:', payload)
@@ -73,60 +75,75 @@ export const useModel = () => {
     }
   }, [])
 
-  const loadModel = useCallback(async () => {
-    if (workerReady && deviceType) {
-      return { device: deviceType }
-    }
-
-    setState((prev) => ({
-      ...prev,
-      isLoading: true,
-      error: null,
-      progress: 0,
-      status: 'Initializing...',
-    }))
-
-    worker?.postMessage({ type: 'load-model' })
-
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Model loading timeout'))
-      }, 60000)
-
-      const checkReady = () => {
-        if (workerReady && deviceType) {
-          clearTimeout(timeout)
-          resolve({ device: deviceType })
-        } else if (state.error) {
-          clearTimeout(timeout)
-          reject(state.error)
-        } else {
-          setTimeout(checkReady, 500)
-        }
-      }
-      checkReady()
-    })
-  }, [state.error])
-
-  const embed = useCallback(async (texts) => {
-    return new Promise((resolve, reject) => {
-      if (!workerReady) {
-        reject(new Error('Model not ready'))
-        return
+  const loadModel = useCallback(
+    async (modelId) => {
+      // 같은 모델이 이미 로드되어 있으면 건너뛰기
+      if (workerReady && deviceType && state.modelId === modelId) {
+        console.log('✅ Model already loaded:', modelId || 'default')
+        return { device: deviceType }
       }
 
-      pendingEmbeddings.push(resolve)
-      worker?.postMessage({ type: 'embed', payload: { texts } })
+      // 모델이 변경되면 worker 재시작
+      if (workerReady && state.modelId && state.modelId !== modelId) {
+        console.log('🔄 Reloading with new model:', modelId)
+        workerReady = false
+      }
 
-      setTimeout(() => {
-        if (pendingEmbeddings.includes(resolve)) {
-          const index = pendingEmbeddings.indexOf(resolve)
-          pendingEmbeddings.splice(index, 1)
-          reject(new Error('Embedding timeout'))
+      setState((prev) => ({
+        ...prev,
+        isLoading: true,
+        error: null,
+        progress: 0,
+        status: 'Initializing...',
+        modelId: modelId || prev.modelId || 'Xenova/all-MiniLM-L6-v2',
+      }))
+
+      worker?.postMessage({ type: 'load-model', payload: { modelId } })
+
+      return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Model loading timeout'))
+        }, 60000)
+
+        const checkReady = () => {
+          if (workerReady && deviceType) {
+            clearTimeout(timeout)
+            resolve({ device: deviceType })
+          } else if (state.error) {
+            clearTimeout(timeout)
+            reject(state.error)
+          } else {
+            setTimeout(checkReady, 500)
+          }
         }
-      }, 120000)
-    })
-  }, [])
+        checkReady()
+      })
+    },
+    [state.error]
+  )
+
+  const embed = useCallback(
+    async (texts) => {
+      return new Promise((resolve, reject) => {
+        if (!workerReady) {
+          reject(new Error('Model not ready'))
+          return
+        }
+
+        pendingEmbeddings.push(resolve)
+        worker?.postMessage({ type: 'embed', payload: { texts } })
+
+        setTimeout(() => {
+          if (pendingEmbeddings.includes(resolve)) {
+            const index = pendingEmbeddings.indexOf(resolve)
+            pendingEmbeddings.splice(index, 1)
+            reject(new Error('Embedding timeout'))
+          }
+        }, 120000)
+      })
+    },
+    [state.modelId]
+  )
 
   return {
     ...state,

@@ -1,6 +1,6 @@
 import { AutoModel, AutoTokenizer } from '@huggingface/transformers'
 
-const MODEL_ID = 'Xenova/all-MiniLM-L6-v2'
+const DEFAULT_MODEL_ID = 'Xenova/all-MiniLM-L6-v2'
 let model = null
 let tokenizer = null
 let device = null
@@ -10,6 +10,10 @@ self.onmessage = async (event) => {
 
   if (type === 'load-model') {
     try {
+      const modelId = payload?.modelId || DEFAULT_MODEL_ID
+
+      console.log('🤗 Loading model:', modelId)
+
       // WebGPU 사용 가능 여부 확인
       let isWebGPUAvailable = false
       if (navigator.gpu) {
@@ -26,21 +30,21 @@ self.onmessage = async (event) => {
         type: 'progress',
         payload: {
           percentage: 10,
-          status: 'Loading tokenizer...',
+          status: `Loading tokenizer from ${modelId}...`,
         },
       })
 
-      tokenizer = await AutoTokenizer.from_pretrained(MODEL_ID)
+      tokenizer = await AutoTokenizer.from_pretrained(modelId)
 
       self.postMessage({
         type: 'progress',
         payload: {
           percentage: 30,
-          status: 'Loading model...',
+          status: `Loading model from ${modelId}...`,
         },
       })
 
-      model = await AutoModel.from_pretrained(MODEL_ID, {
+      model = await AutoModel.from_pretrained(modelId, {
         device,
         dtype: device === 'webgpu' ? 'fp32' : 'q8',
         progress_callback: (progress) => {
@@ -59,7 +63,7 @@ self.onmessage = async (event) => {
 
       self.postMessage({
         type: 'ready',
-        payload: { device },
+        payload: { device, modelId },
       })
     } catch (error) {
       console.error('Model loading error:', error)

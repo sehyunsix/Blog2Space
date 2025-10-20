@@ -2,10 +2,14 @@ import { useStore } from '../store/useStore'
 import { useMemo } from 'react'
 
 export default function InfoPanel() {
-  const { texts, selectedIndex, setSelectedIndex, embeddings, positions3D } = useStore()
+  const { texts, selectedIndex, setSelectedIndex, embeddings, positions3D, searchResults } =
+    useStore()
 
   const selectedText = selectedIndex !== null ? texts[selectedIndex] : null
   const selectedEmbedding = selectedIndex !== null ? embeddings[selectedIndex] : null
+
+  // 검색 결과가 있을 때는 모든 텍스트 표시
+  const showAllTexts = searchResults.length > 0
 
   // 코사인 유사도 계산
   function cosineSimilarity(a, b) {
@@ -43,13 +47,14 @@ export default function InfoPanel() {
     return similarities
   }, [selectedIndex, selectedEmbedding, texts, embeddings])
 
-  if (selectedIndex === null) return null
+  // 검색 결과나 선택된 항목이 없으면 패널 숨김
+  if (selectedIndex === null && !showAllTexts) return null
 
   return (
-    <div className="absolute top-24 right-4 w-80 bg-gray-900/90 backdrop-blur-sm text-white rounded-lg shadow-2xl overflow-hidden z-10">
+    <div className="absolute top-24 right-4 w-96 bg-gray-900/95 backdrop-blur-sm text-white rounded-lg shadow-2xl overflow-hidden z-10 max-h-[80vh] flex flex-col">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 flex items-center justify-between">
-        <h3 className="font-semibold">텍스트 정보</h3>
+        <h3 className="font-semibold">{showAllTexts ? '모든 텍스트 & 임베딩' : '텍스트 정보'}</h3>
         <button
           onClick={() => setSelectedIndex(null)}
           className="text-white/80 hover:text-white transition-colors"
@@ -66,44 +71,121 @@ export default function InfoPanel() {
       </div>
 
       {/* Content */}
-      <div className="p-4 max-h-96 overflow-y-auto">
-        <div className="mb-4">
-          <div className="text-xs text-gray-400 mb-1">선택된 텍스트</div>
-          <div className="text-sm bg-gray-800 p-3 rounded-lg">{selectedText}</div>
-        </div>
-
-        <div className="mb-2">
-          <div className="text-xs text-gray-400 mb-1">3D 좌표</div>
-          <div className="text-xs font-mono bg-gray-800 p-2 rounded">
-            x: {positions3D[selectedIndex][0].toFixed(2)}
-            <br />
-            y: {positions3D[selectedIndex][1].toFixed(2)}
-            <br />
-            z: {positions3D[selectedIndex][2].toFixed(2)}
-          </div>
-        </div>
-
-        {similarTexts.length > 0 && (
-          <div className="mt-4">
-            <div className="text-xs text-gray-400 mb-2">유사한 텍스트 (코사인 유사도)</div>
-            <div className="space-y-2">
-              {similarTexts.map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelectedIndex(item.index)}
-                  className="w-full text-left bg-gray-800 hover:bg-gray-700 p-2 rounded transition-colors"
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-semibold text-purple-400">#{item.index + 1}</span>
-                    <span className="text-xs text-green-400">
-                      {(item.similarity * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-300 line-clamp-2">{item.text}</div>
-                </button>
-              ))}
+      <div className="p-4 overflow-y-auto flex-1">
+        {/* 모든 텍스트 & 임베딩 표시 (검색 결과가 있을 때) */}
+        {showAllTexts && (
+          <div className="space-y-3">
+            <div className="text-xs text-gray-400 mb-2">
+              전체 {texts.length}개 텍스트 (유사도 순)
             </div>
+            {searchResults
+              .sort((a, b) => b.similarity - a.similarity)
+              .map((result) => {
+                const isHighSimilarity = result.similarity > 0.7
+                return (
+                  <div
+                    key={result.index}
+                    className={`p-3 rounded-lg cursor-pointer transition-all ${
+                      selectedIndex === result.index
+                        ? 'bg-purple-700 border-2 border-purple-400'
+                        : isHighSimilarity
+                          ? 'bg-gray-700 hover:bg-gray-600'
+                          : 'bg-gray-800 hover:bg-gray-700'
+                    }`}
+                    onClick={() => setSelectedIndex(result.index)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-purple-400">
+                        #{result.index + 1}
+                      </span>
+                      <span
+                        className={`text-sm font-bold ${
+                          isHighSimilarity ? 'text-yellow-400' : 'text-green-400'
+                        }`}
+                      >
+                        {(result.similarity * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                    <div
+                      className={`text-sm mb-2 line-clamp-2 ${
+                        isHighSimilarity ? 'text-yellow-400 font-bold' : 'text-gray-300'
+                      }`}
+                    >
+                      {texts[result.index]}
+                    </div>
+                    <div className="text-xs font-mono text-gray-500">
+                      임베딩: [
+                      {embeddings[result.index]
+                        .slice(0, 3)
+                        .map((v) => v.toFixed(2))
+                        .join(', ')}
+                      ...]
+                    </div>
+                    <div className="text-xs font-mono text-gray-500 mt-1">
+                      위치: ({positions3D[result.index].map((v) => v.toFixed(1)).join(', ')})
+                    </div>
+                  </div>
+                )
+              })}
           </div>
+        )}
+
+        {/* 선택된 텍스트 상세 정보 (검색 결과가 없을 때) */}
+        {!showAllTexts && selectedIndex !== null && (
+          <>
+            <div className="mb-4">
+              <div className="text-xs text-gray-400 mb-1">선택된 텍스트</div>
+              <div className="text-sm bg-gray-800 p-3 rounded-lg">{selectedText}</div>
+            </div>
+
+            <div className="mb-4">
+              <div className="text-xs text-gray-400 mb-1">임베딩 벡터 (처음 10개)</div>
+              <div className="text-xs font-mono bg-gray-800 p-2 rounded max-h-32 overflow-y-auto">
+                [
+                {selectedEmbedding
+                  ?.slice(0, 10)
+                  .map((v) => v.toFixed(4))
+                  .join(',\n ')}
+                ...]
+              </div>
+            </div>
+
+            <div className="mb-2">
+              <div className="text-xs text-gray-400 mb-1">3D 좌표</div>
+              <div className="text-xs font-mono bg-gray-800 p-2 rounded">
+                x: {positions3D[selectedIndex][0].toFixed(2)}
+                <br />
+                y: {positions3D[selectedIndex][1].toFixed(2)}
+                <br />
+                z: {positions3D[selectedIndex][2].toFixed(2)}
+              </div>
+            </div>
+
+            {similarTexts.length > 0 && (
+              <div className="mt-4">
+                <div className="text-xs text-gray-400 mb-2">유사한 텍스트 (코사인 유사도)</div>
+                <div className="space-y-2">
+                  {similarTexts.map((item, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedIndex(item.index)}
+                      className="w-full text-left bg-gray-800 hover:bg-gray-700 p-2 rounded transition-colors"
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-semibold text-purple-400">
+                          #{item.index + 1}
+                        </span>
+                        <span className="text-xs text-green-400">
+                          {(item.similarity * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-300 line-clamp-2">{item.text}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
