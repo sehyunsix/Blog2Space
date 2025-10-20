@@ -45,11 +45,37 @@ export default function InputScreen() {
       // 2. 임베딩 생성
       setLoadingProgress(40, '임베딩 생성 중...')
       const embeddings = await embed(texts)
+
+      // 임베딩 검증
+      if (!embeddings || embeddings.length === 0) {
+        throw new Error('임베딩 생성 실패: 빈 결과')
+      }
+
+      if (embeddings.length !== texts.length) {
+        throw new Error(`임베딩 개수 불일치: ${embeddings.length} vs ${texts.length}`)
+      }
+
+      console.log('✅ 임베딩 생성 완료:', {
+        count: embeddings.length,
+        dimension: embeddings[0]?.length,
+        sample: embeddings[0]?.slice(0, 5),
+      })
+
       setEmbeddings(embeddings)
 
       // 3. 차원 축소 (UMAP)
       setLoadingProgress(60, '3D 좌표 계산 중 (UMAP)...')
       const positions3D = await reduceWithUMAP(embeddings, 3)
+
+      // 좌표 검증
+      if (!positions3D || positions3D.length === 0) {
+        throw new Error('차원 축소 실패: 빈 결과')
+      }
+
+      console.log('✅ 차원 축소 완료:', {
+        count: positions3D.length,
+        sample: positions3D[0],
+      })
 
       // 좌표 정규화
       setLoadingProgress(90, '최적화 중...')
@@ -139,18 +165,20 @@ REST API는 HTTP를 기반으로 한 웹 서비스 아키텍처입니다.`
   }
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-      <div className="max-w-2xl w-full mx-4">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-4">
+    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center overflow-auto">
+      <div className="max-w-2xl w-full mx-2 sm:mx-4 my-4 sm:my-8">
+        <div className="text-center mb-4 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-4">
             Blog<span className="text-purple-400">2</span>Space
           </h1>
-          <p className="text-gray-300 text-lg">텍스트를 3D 임베딩 공간으로 시각화하세요</p>
+          <p className="text-gray-300 text-sm sm:text-base md:text-lg">
+            텍스트를 3D 임베딩 공간으로 시각화하세요
+          </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl"
+          className="bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl"
         >
           {/* 고급 설정 토글 */}
           <button
@@ -190,32 +218,32 @@ REST API는 HTTP를 기반으로 한 웹 서비스 아키텍처입니다.`
             </div>
           )}
 
-          <div className="mb-6">
-            <label className="block text-white text-sm font-semibold mb-3">
+          <div className="mb-4 sm:mb-6">
+            <label className="block text-white text-sm font-semibold mb-2 sm:mb-3">
               텍스트 입력 (한 줄에 하나씩)
             </label>
             <textarea
-              className="w-full h-64 px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              className="w-full h-48 sm:h-56 md:h-64 px-3 sm:px-4 py-2 sm:py-3 bg-white/5 border border-white/20 rounded-lg text-white text-sm sm:text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
               placeholder="예시:&#10;React는 사용자 인터페이스를 구축하기 위한 JavaScript 라이브러리입니다.&#10;Vue.js는 프로그레시브 자바스크립트 프레임워크입니다.&#10;Python은 다양한 용도로 사용되는 고급 프로그래밍 언어입니다.&#10;..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
             />
-            <p className="text-gray-400 text-sm mt-2">
+            <p className="text-gray-400 text-xs sm:text-sm mt-2">
               {inputText.split('\n').filter((t) => t.trim()).length}개의 텍스트
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
               type="submit"
-              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+              className="flex-1 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-semibold py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation"
             >
               3D 공간 생성
             </button>
             <button
               type="button"
               onClick={handleExample}
-              className="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+              className="bg-white/10 hover:bg-white/20 active:bg-white/30 text-white font-semibold py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 touch-manipulation"
             >
               예시 불러오기
             </button>

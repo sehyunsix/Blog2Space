@@ -5,6 +5,7 @@ import PointCloud from './PointCloud'
 import SearchPanel from './SearchPanel'
 import InfoPanel from './InfoPanel'
 import CameraController from './CameraController'
+import ModelSelector from './ModelSelector'
 
 export default function Viewer3D() {
   const { texts, positions3D, setStage } = useStore()
@@ -40,6 +41,9 @@ export default function Viewer3D() {
           <div className="text-white/70 text-sm">{texts.length}개 텍스트</div>
         </div>
       </div>
+
+      {/* Model Selector */}
+      <ModelSelector />
 
       {/* Search Panel */}
       <SearchPanel />

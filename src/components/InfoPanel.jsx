@@ -51,7 +51,7 @@ export default function InfoPanel() {
   if (selectedIndex === null && !showAllTexts) return null
 
   return (
-    <div className="absolute top-24 right-4 w-96 bg-gray-900/95 backdrop-blur-sm text-white rounded-lg shadow-2xl overflow-hidden z-10 max-h-[80vh] flex flex-col">
+    <div className="absolute top-16 sm:top-24 right-2 sm:right-4 w-80 sm:w-96 bg-gray-900/95 backdrop-blur-sm text-white rounded-lg shadow-2xl overflow-hidden z-10 max-h-[60vh] sm:max-h-[80vh] flex flex-col">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 flex items-center justify-between">
         <h3 className="font-semibold">{showAllTexts ? '모든 텍스트 & 임베딩' : '텍스트 정보'}</h3>

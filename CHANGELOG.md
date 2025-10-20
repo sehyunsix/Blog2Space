@@ -7,9 +7,116 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-10-20
+
+### Added
+
+- 📱 모바일 환경 완전 지원
+  - 반응형 디자인 (스마트폰, 태블릿, 데스크톱)
+  - 터치 제스처 최적화
+  - 모바일 Safe Area 지원 (노치, 홈 인디케이터 고려)
+  - PWA 메타 태그 추가 (홈 화면 추가 지원)
+- 🌐 커스텀 도메인 지원
+  - Vite allowedHosts 설정 추가 (www.sobut.shop)
+- 🎨 모바일 UI/UX 개선
+  - InputScreen 반응형 레이아웃
+  - ModelSelector 패널 크기/위치 최적화
+  - InfoPanel 모바일 크기 조정
+  - SearchPanel 너비 자동 조정
+  - 버튼 크기 및 간격 터치 친화적으로 조정
+- ✨ 터치 최적화
+  - touch-manipulation 클래스 추가
+  - active 상태 스타일링
+  - 탭 하이라이트 제거
+- 📏 반응형 타이포그래피
+  - 제목/본문 크기 자동 조정 (text-3xl sm:text-4xl md:text-5xl)
+  - 입력 필드 및 버튼 크기 조정
+
+### Changed
+
+- 🔄 전역 상태 관리 개선 (Pub-Sub 패턴)
+  - useModel hook을 싱글톤으로 리팩토링
+  - 모든 컴포넌트가 동일한 모델 상태 공유
+  - 구독자 패턴으로 리렌더링 최적화
+- 🎯 임베딩 완료 시 자동 상태 리셋
+  - isLoading 플래그 정확한 관리
+  - 모델 준비 상태 즉시 반영
+- 📱 CSS 최적화
+  - 100dvh (Dynamic Viewport Height) 사용
+  - 커스텀 스크롤바 스타일링
+  - webkit-tap-highlight-color 최적화
+- 🎨 레이아웃 개선
+  - 패널 간격 및 위치 조정 (모바일 친화적)
+  - 버튼 배치 (모바일에서 세로, 데스크톱에서 가로)
+  - textarea 높이 반응형 조정
+
+### Fixed
+
+- 🐛 ModelSelector 리렌더링 문제 완전 해결
+  - Worker 메시지가 모든 구독자에게 전파
+  - 진행률 업데이트 실시간 반영
+- 🔧 임베딩 완료 후 "로딩 중" 상태 유지 문제 해결
+- 📱 모바일 스크롤 및 터치 이벤트 충돌 해결
+- 🎯 Safe Area Inset 적용으로 노치 디바이스 지원
+
+### Technical
+
+- 🏗️ useModel hook 아키텍처 개선 (모듈 레벨 전역 상태 + 구독 패턴)
+- 🧹 setState 로직 최적화 (클로저 문제 해결)
+- 📝 모바일 최적화 주석 추가
+- 🚀 성능 개선 (불필요한 리렌더링 제거)
+
+## [0.3.0] - 2025-10-20
+
+### Added
+
+- 🎨 4단계 모델 로딩 프로그레스 표시
+  - [1/4] 토크나이저 다운로드 (0-20%)
+  - [2/4] 모델 파일 다운로드 (20-85%)
+  - [3/4] ONNX Runtime 초기화 (85-95%)
+  - [4/4] 최종 설정 (95-100%)
+- 🖥️ 왼쪽 패널 모델 선택 UI
+  - 5가지 인기 임베딩 모델 (MiniLM-L6, MPNet Base, BGE Small, GTE Small, Multilingual)
+  - 커스텀 Hugging Face 모델 URL 입력 지원
+  - 실시간 다운로드 진행 상황 표시
+- ✅ 임베딩 유효성 검증 및 fallback 처리
+  - NaN/Infinity 값 자동 감지 및 대체
+  - L2 정규화 적용
+  - 안정적인 mean pooling 구현
+- 📊 UMAP 차원 축소 개선
+  - 입력 벡터 검증 강화
+  - 샘플링 기반 대용량 데이터 처리 (500개 이상)
+  - PCA fallback 구현
+- 🧪 테스트 코드 추가
+  - useModel hook 테스트
+  - ModelSelector 컴포넌트 테스트
+  - UMAP 유틸리티 테스트
+
+### Changed
+
+- ⚡ Worker 캐시 버스팅 구현 (실시간 업데이트 보장)
+- 🔄 React state 관리 최적화 (리렌더링 개선)
+- 📦 모델 로딩 타임아웃 증가 (60초 → 180초)
+- 🎯 Progress throttling 적용 (200ms 간격)
+
+### Fixed
+
+- 🐛 임베딩 생성 시 NaN 값 발생 문제 해결
+- 🔧 ModelSelector 리렌더링 문제 해결
+- ✅ 대용량 모델 다운로드 안정성 개선
+- 🎨 UI 업데이트 누락 문제 해결
+
+### Technical
+
+- 🏗️ Worker 메시지 처리 로직 개선
+- 🧹 불필요한 디버그 로그 정리
+- 📝 상세한 주석 및 문서화
+- ⚡ 성능 최적화
+
 ## [0.2.0] - 2025-10-20
 
 ### Added
+
 - ✨ UMAP (Uniform Manifold Approximation and Projection) 차원 축소 기법 구현
 - 🏷️ 3D 포인트 클라우드 위에 텍스트 라벨 추가 (항상 표시)
 - 💬 호버 시 전체 텍스트 툴팁 표시 기능
@@ -19,6 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ⏱️ UMAP 타임아웃 추가 (30초)
 
 ### Changed
+
 - 🔄 PCA에서 UMAP으로 차원 축소 알고리즘 변경 (더 나은 시각화 품질)
 - 🎯 텍스트 라벨이 항상 표시되도록 개선 (투명도로 가시성 조절)
 - 📊 로딩 진행 상황 표시 개선 (UMAP 단계 추가)
@@ -27,16 +135,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🎨 포인트 색상 개선 (더 다양한 색상 스펙트럼)
 
 ### Removed
+
 - 🗑️ `src/utils/pca.js` 파일 삭제 (UMAP으로 대체)
 - 🧹 과도한 콘솔 로그 제거
 
 ### Fixed
+
 - 🐛 NaN 좌표 문제 수정 (최소 3개 텍스트 요구사항 추가)
 - ✅ UMAP 실행 시 에러 처리 및 폴백 로직 개선
 - 🎨 PointCloud 렌더링 최적화
 - 🔧 UMAP 스택 오버플로우 문제 해결 (epoch 제한, 타임아웃 추가)
 
 ### Technical
+
 - 🔧 Worker 메시지 로깅 최소화
 - 🎯 좌표 정규화 함수 최적화
 - 🏗️ 코드 구조 개선 및 가독성 향상
@@ -45,6 +156,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2025-10-20
 
 ### Added
+
 - 초기 프로젝트 구조 설정
 - Git 버전 관리 초기화
 - SemVer 기반 버전 관리 시스템 구축

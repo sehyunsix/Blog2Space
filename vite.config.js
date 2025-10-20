@@ -14,6 +14,7 @@ export default defineConfig({
     target: 'esnext',
   },
   server: {
+    allowedHosts: ['www.sobut.shop', '.sobut.shop'],
     headers: {
       'Cross-Origin-Embedder-Policy': 'require-corp',
       'Cross-Origin-Opener-Policy': 'same-origin',

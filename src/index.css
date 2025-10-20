@@ -16,9 +16,46 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
   background-color: #0f172a;
+  /* 모바일 최적화 */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: pan-x pan-y;
 }
 
 #root {
   width: 100vw;
   height: 100vh;
+  /* 모바일 주소창 높이 고려 */
+  height: 100dvh;
+}
+
+/* 모바일 터치 최적화 */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* 스크롤바 스타일링 (모바일에서는 자동 숨김) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+/* 모바일 Safe Area 지원 */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
 }

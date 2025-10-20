@@ -9,11 +9,11 @@ export default function SearchPanel() {
   const {
     texts,
     embeddings,
-    positions3D,
     setSearchResults,
     setSelectedIndex,
     setCameraTarget,
     setSearchQueryData,
+    setPositions3D,
   } = useStore()
   const { embed } = useModel()
 
@@ -31,18 +31,27 @@ export default function SearchPanel() {
       const queryEmbeddings = await embed([query])
       const queryEmbedding = queryEmbeddings[0]
 
-      // 검색 쿼리의 3D 위치 계산 (기존 임베딩들과 함께 UMAP 적용)
+      console.log('🔍 검색 쿼리와 함께 UMAP 재계산 시작...')
+
+      // 검색 쿼리를 포함하여 전체 UMAP 재계산
       const allEmbeddings = [...embeddings, queryEmbedding]
       const all3DPositions = await reduceWithUMAP(allEmbeddings, 3)
 
-      // 검색 쿼리의 위치는 마지막 요소
-      const queryPosition = all3DPositions[all3DPositions.length - 1]
+      // 정규화 (InputScreen과 동일한 방식)
+      const normalizedPositions = normalizeAllPositions(all3DPositions)
 
-      // 정규화
-      const normalized = normalizePosition(queryPosition, positions3D)
+      // 기존 포인트들의 위치 업데이트
+      const newPositions3D = normalizedPositions.slice(0, -1) // 검색 쿼리 제외
+      const queryPosition = normalizedPositions[normalizedPositions.length - 1] // 검색 쿼리 위치
 
-      // Store에 검색 쿼리 데이터 저장
-      setSearchQueryData(query, queryEmbedding, normalized)
+      console.log('✅ UMAP 재계산 완료:', {
+        totalPoints: normalizedPositions.length,
+        queryPosition,
+      })
+
+      // Store 업데이트
+      setPositions3D(newPositions3D)
+      setSearchQueryData(query, queryEmbedding, queryPosition)
 
       // 코사인 유사도 계산
       const results = texts.map((text, i) => ({
@@ -59,8 +68,8 @@ export default function SearchPanel() {
       setSearchResults(filtered)
 
       // 검색 쿼리 위치로 카메라 이동
-      console.log('🎯 검색 쿼리 위치로 이동:', normalized)
-      setCameraTarget(normalized)
+      console.log('🎯 검색 쿼리 위치로 이동:', queryPosition)
+      setCameraTarget(queryPosition)
 
       // 가장 유사한 포인트 선택
       if (filtered.length > 0) {
@@ -92,41 +101,60 @@ export default function SearchPanel() {
     return dot / (magA * magB)
   }
 
-  // 새 위치를 기존 좌표계에 맞게 정규화
-  function normalizePosition(newPos, existingPositions) {
-    if (existingPositions.length === 0) return newPos
+  // 모든 포인트를 정규화 (InputScreen과 동일한 방식)
+  function normalizeAllPositions(positions) {
+    if (positions.length === 0) return []
 
-    // 기존 포인트들의 범위 계산
-    const mins = [Infinity, Infinity, Infinity]
-    const maxs = [-Infinity, -Infinity, -Infinity]
+    const dims = positions[0].length
+    const mins = new Array(dims).fill(Infinity)
+    const maxs = new Array(dims).fill(-Infinity)
 
-    for (const pos of existingPositions) {
-      for (let i = 0; i < 3; i++) {
-        if (pos[i] < mins[i]) mins[i] = pos[i]
-        if (pos[i] > maxs[i]) maxs[i] = pos[i]
+    // 최소/최대값 계산
+    for (const pos of positions) {
+      for (let i = 0; i < dims; i++) {
+        if (isFinite(pos[i])) {
+          if (pos[i] < mins[i]) mins[i] = pos[i]
+          if (pos[i] > maxs[i]) maxs[i] = pos[i]
+        }
       }
     }
 
-    // 새 위치를 같은 스케일로 정규화
+    // 스케일 계산
     const scale = 100
-    return newPos.map((val, i) => {
-      const range = maxs[i] - mins[i]
-      if (range === 0 || !isFinite(range)) return 0
-      // 새 위치를 기존 범위에 맞춤
-      return ((val - mins[i]) / range - 0.5) * scale
-    })
+
+    return positions.map((pos) =>
+      pos.map((val, i) => {
+        const range = maxs[i] - mins[i]
+        if (range === 0 || !isFinite(range)) {
+          return 0
+        }
+        const normalized = ((val - mins[i]) / range - 0.5) * scale
+        return isFinite(normalized) ? normalized : 0
+      })
+    )
   }
 
-  const handleClear = () => {
+  const handleClear = async () => {
     setQuery('')
     setSearchResults([])
     setSelectedIndex(null)
     setCameraTarget(null)
     useStore.getState().clearSearchQueryData()
+
+    // 검색 쿼리 없이 원래 위치로 복원 (UMAP 재계산)
+    console.log('🔄 원래 위치로 복원 중...')
+    try {
+      const originalPositions = await reduceWithUMAP(embeddings, 3)
+      const normalized = normalizeAllPositions(originalPositions)
+      setPositions3D(normalized)
+      console.log('✅ 원래 위치로 복원 완료')
+    } catch (error) {
+      console.error('❌ 복원 오류:', error)
+    }
   }
 
   return (
-    <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-10 w-full max-w-md px-4">
+    <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 z-10 w-[calc(100%-1rem)] sm:w-full max-w-md px-2 sm:px-4">
       <form
         onSubmit={handleSearch}
         className="bg-gray-900/80 backdrop-blur-sm rounded-lg shadow-lg"

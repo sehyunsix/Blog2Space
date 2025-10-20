@@ -79,8 +79,8 @@ function Sphere({
   // 색상 결정
   let color
   if (isSearchQuery) {
-    // 검색 쿼리는 특별한 색상 (빨간색/주황색)
-    color = '#ef4444' // 밝은 빨간색
+    // 검색 쿼리는 특별한 색상 (청록색/시안 - 우주 테마에 어울림)
+    color = '#00d4ff' // 밝은 청록색
   } else if (isSelected) {
     color = '#fbbf24' // 노란색
   } else if (searchResults.length > 0) {
@@ -162,7 +162,7 @@ function Sphere({
             className="text-center px-5 py-4 rounded-lg shadow-2xl whitespace-nowrap"
             style={{
               background: 'rgba(0, 0, 0, 0.9)', // 모두 검은 배경
-              color: isSearchQuery ? '#ef4444' : '#ffffff', // 검색 쿼리는 빨간 글자
+              color: isSearchQuery ? '#00d4ff' : '#ffffff', // 검색 쿼리는 청록색 글자
               fontSize: isSearchQuery ? '216px' : isSelected ? '192px' : '144px',
               fontWeight: isSearchQuery
                 ? '900'
@@ -176,7 +176,7 @@ function Sphere({
               textOverflow: 'ellipsis',
               opacity: isSelected || isHovered || isSearchQuery ? 1 : 0.85,
               border: isSearchQuery
-                ? '6px solid rgba(239, 68, 68, 1)' // 검색 쿼리는 빨간 테두리
+                ? '6px solid rgba(0, 212, 255, 1)' // 검색 쿼리는 청록색 테두리
                 : isSelected
                   ? '5px solid rgba(251, 191, 36, 1)'
                   : similarity > 0.7
@@ -195,12 +195,12 @@ function Sphere({
               className="px-4 py-2 rounded-full shadow-xl"
               style={{
                 background:
-                  'linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(147, 51, 234, 0.9))',
+                  'linear-gradient(135deg, rgba(6, 182, 212, 0.9), rgba(14, 165, 233, 0.9))', // 청록색 그라데이션
                 fontSize: '96px',
                 fontWeight: '700',
                 color: '#ffffff',
-                textShadow: '0 0 20px rgba(255, 255, 255, 0.8)',
-                border: '3px solid rgba(255, 255, 255, 0.5)',
+                textShadow: '0 0 20px rgba(6, 182, 212, 0.8), 0 0 30px rgba(14, 165, 233, 0.6)',
+                border: '3px solid rgba(6, 182, 212, 0.6)',
               }}
             >
               {(similarity * 100).toFixed(1)}%

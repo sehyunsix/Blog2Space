@@ -19,7 +19,8 @@ export async function reduceWithUMAP(vectors, targetDim = 3) {
   // 입력 벡터 검증 - NaN이나 Infinity 체크
   if (vectors.some((v) => v.some((x) => !isFinite(x)))) {
     console.error('❌ UMAP: 입력 벡터에 유효하지 않은 값이 있습니다')
-    return []
+    console.log('⚠️ Falling back to PCA...')
+    return simplePCA(vectors, targetDim)
   }
 
   // 데이터가 너무 많으면 샘플링 후 UMAP 사용 (성능 이슈 방지)
@@ -54,12 +55,21 @@ export async function reduceWithUMAP(vectors, targetDim = 3) {
       new Promise((_, reject) => setTimeout(() => reject(new Error('UMAP timeout')), 30000)),
     ])
 
+    // 결과 검증
+    if (!embedding || embedding.length === 0) {
+      throw new Error('UMAP produced empty result')
+    }
+
     // NaN 체크
     if (embedding.some((e) => e.some((v) => !isFinite(v)))) {
       throw new Error('UMAP produced invalid values')
     }
 
-    console.log('✅ UMAP 완료')
+    console.log('✅ UMAP 완료:', {
+      inputVectors: vectors.length,
+      outputVectors: embedding.length,
+      sampleOutput: embedding[0]?.slice(0, 3),
+    })
     return embedding
   } catch (error) {
     console.warn('⚠️ UMAP 실패, 샘플링된 UMAP으로 재시도:', error.message)
