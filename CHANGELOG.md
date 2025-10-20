@@ -44,6 +44,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Xenova/all-distilroberta-v1` → `Xenova/bge-small-zh-v1.5`로 교체
   - Transformers.js와 호환되는 검증된 모델만 사용
 
+### Added (추가)
+
+- 🧪 실험적 모델 카테고리 추가 (2개)
+  - Gemma 2 2B: Google Gemma 모델 (~1.5GB) ⚠️ 실험적
+  - ModernBERT Base: 최신 BERT 변형 (~440MB, 768dim)
+
 ## [0.4.1] - 2025-10-20
 
 ### Added

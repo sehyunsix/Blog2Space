@@ -100,6 +100,23 @@ const MODEL_CATEGORIES = {
       },
     ],
   },
+  experimental: {
+    title: '🧪 실험적 모델',
+    models: [
+      {
+        id: 'Xenova/gemma-2-2b-it',
+        name: 'Gemma 2 2B',
+        description: 'Google Gemma (실험) ⚠️',
+        size: '~1.5GB',
+      },
+      {
+        id: 'Xenova/modernbert-base',
+        name: 'ModernBERT Base',
+        description: '최신 BERT 변형 (768dim)',
+        size: '~440MB',
+      },
+    ],
+  },
 }
 
 export default function ModelSelector() {
