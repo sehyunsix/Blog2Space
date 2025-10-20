@@ -7,6 +7,8 @@
 ![Transformers.js](https://img.shields.io/badge/Transformers.js-2.17.1-orange)
 ![Version](https://img.shields.io/badge/version-0.6.0-blue)
 
+**🚀 [라이브 데모 보기](http://www.sobut.shop)** | **📖 [문서](#-사용-방법)**
+
 ## 🌟 특징
 
 - **텍스트 임베딩**: Transformers.js를 사용한 브라우저 내 AI 임베딩 생성
