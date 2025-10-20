@@ -4,15 +4,15 @@ export default function LoadingScreen() {
   const { loadingProgress, loadingMessage, texts } = useStore()
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+    <div className="w-full h-full bg-black flex items-center justify-center">
       <div className="max-w-md w-full mx-4">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">3D 공간 생성 중...</h2>
+        <div className="bg-black/60 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10">
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">🚀 우주 생성 중...</h2>
 
           <div className="mb-6">
             <div className="w-full bg-white/10 rounded-full h-3 mb-2">
               <div
-                className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 h-3 rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/50"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
@@ -25,7 +25,7 @@ export default function LoadingScreen() {
             <div className="flex items-center gap-3">
               <div className="flex-shrink-0">{loadingProgress >= 10 ? '✓' : '⏳'}</div>
               <div className="flex-1">
-                <span className={loadingProgress >= 10 ? 'text-green-400' : 'text-gray-300'}>
+                <span className={loadingProgress >= 10 ? 'text-cyan-400' : 'text-gray-300'}>
                   {texts.length}개 텍스트 로드 완료
                 </span>
               </div>
@@ -39,7 +39,7 @@ export default function LoadingScreen() {
                 <span
                   className={
                     loadingProgress >= 50
-                      ? 'text-green-400'
+                      ? 'text-cyan-400'
                       : loadingProgress >= 10
                         ? 'text-white'
                         : 'text-gray-500'
@@ -58,7 +58,7 @@ export default function LoadingScreen() {
                 <span
                   className={
                     loadingProgress >= 80
-                      ? 'text-green-400'
+                      ? 'text-cyan-400'
                       : loadingProgress >= 50
                         ? 'text-white'
                         : 'text-gray-500'
@@ -77,7 +77,7 @@ export default function LoadingScreen() {
                 <span
                   className={
                     loadingProgress >= 100
-                      ? 'text-green-400'
+                      ? 'text-cyan-400'
                       : loadingProgress >= 80
                         ? 'text-white'
                         : 'text-gray-500'
