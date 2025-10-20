@@ -11,7 +11,10 @@
     "lint:fix": "eslint . --ext js,jsx --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "version:patch": "npm version patch -m \"chore: bump version to %s\"",
+    "version:minor": "npm version minor -m \"chore: bump version to %s\"",
+    "version:major": "npm version major -m \"chore: bump version to %s\""
   },
   "dependencies": {
     "@react-three/drei": "^9.105.4",
