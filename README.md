@@ -19,7 +19,10 @@
 ## 📹 데모
 
 
-https://github.com/user-attachments/assets/eb195840-2fb4-4c08-87c1-a27a34991ce2
+
+
+https://github.com/user-attachments/assets/7f708ea0-5670-4879-8e2e-32b8309bcea3
+
 
 
 ### 주요 기능 시연
