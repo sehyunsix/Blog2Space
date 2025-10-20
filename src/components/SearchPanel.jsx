@@ -208,7 +208,7 @@ export default function SearchPanel() {
           <button
             type="submit"
             disabled={isSearching || !query.trim()}
-            className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+            className="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium touch-manipulation"
           >
             {isSearching ? '검색 중...' : '검색'}
           </button>

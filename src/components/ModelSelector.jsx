@@ -3,7 +3,7 @@ import { useModel } from '../hooks/useModel'
 
 const MODEL_CATEGORIES = {
   recommended: {
-    title: '⭐ 추천 모델',
+    title: '추천 모델',
     models: [
       {
         id: 'Xenova/all-MiniLM-L6-v2',
@@ -26,7 +26,7 @@ const MODEL_CATEGORIES = {
     ],
   },
   multilingual: {
-    title: '🌏 다국어 모델',
+    title: '다국어 모델',
     models: [
       {
         id: 'Xenova/paraphrase-multilingual-MiniLM-L12-v2',
@@ -49,7 +49,7 @@ const MODEL_CATEGORIES = {
     ],
   },
   english: {
-    title: '🇺🇸 영어 특화',
+    title: '영어 특화',
     models: [
       {
         id: 'Xenova/all-mpnet-base-v2',
@@ -78,7 +78,7 @@ const MODEL_CATEGORIES = {
     ],
   },
   specialized: {
-    title: '🎯 특수 목적',
+    title: '특수 목적',
     models: [
       {
         id: 'Xenova/LaBSE',
@@ -101,7 +101,7 @@ const MODEL_CATEGORIES = {
     ],
   },
   experimental: {
-    title: '🧪 실험적 모델',
+    title: '실험적 모델',
     models: [
       {
         id: 'Xenova/gemma-2-2b-it',
@@ -200,7 +200,7 @@ export default function ModelSelector() {
                   d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
                 />
               </svg>
-              <h3 className="font-semibold text-white text-sm sm:text-base">🤗 모델 선택</h3>
+              <h3 className="font-semibold text-white text-sm sm:text-base">모델 선택</h3>
               <svg
                 className={`w-4 h-4 sm:w-5 sm:h-5 text-white transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                 fill="none"
